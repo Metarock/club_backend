@@ -5,15 +5,13 @@ import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
 import { User } from "./entities/User";
 import { UserResolver } from "./resolvers/user";
-
+import pg from "pg-connection-string";
 
 const main = async () => {
     await createConnection();
 
-
     const app = express();
     app.get("/", (_req, res) => res.send("hello"));
-
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({

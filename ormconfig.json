@@ -1,14 +1,15 @@
 {
-    "type": "mongodb",
-    "url": "mongodb+srv://sanggy:123@msa-assignment2.uw9sq.mongodb.net/clubDB?retryWrites=true&w=majority",
-    "useNewUrlParser": true,
-    "useUnifiedTopology": true,
+    "type": "postgres",
+    "host": "chunee.db.elephantsql.com",
+    "username": "dbezkkue",
+    "password": "eiSkSsUQ1toLTXkkv4Rmav8OiJJjHN54",
+    "database": "dbezkkue",
     "synchronize": true,
     "logging": false,
     "entities": [
-        "src/entities/**/*.ts"
+        "dist/entities/*.js"
     ],
     "migrations": [
-        "src/migrations/**/*.ts"
+        "dist/migrations/*.js"
     ]
 }

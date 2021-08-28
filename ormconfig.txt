@@ -1,0 +1,14 @@
+{
+    "type": "mongodb",
+    "url": "mongodb+srv://sanggy:123@msa-assignment2.uw9sq.mongodb.net/clubDB?retryWrites=true&w=majority",
+    "useNewUrlParser": true,
+    "useUnifiedTopology": true,
+    "synchronize": true,
+    "logging": false,
+    "entities": [
+        "dist/entities/*.js"
+    ],
+    "migrations": [
+        "dist/migrations/*.js"
+    ]
+}

@@ -16,19 +16,9 @@ let User = class User extends typeorm_1.BaseEntity {
 };
 __decorate([
     (0, type_graphql_1.Field)(),
-    (0, typeorm_1.ObjectIdColumn)(),
-    __metadata("design:type", String)
-], User.prototype, "_id", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(),
-    (0, typeorm_1.PrimaryColumn)(),
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", String)
 ], User.prototype, "id", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(),
-    (0, typeorm_1.Column)({ unique: true }),
-    __metadata("design:type", String)
-], User.prototype, "username", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
     (0, typeorm_1.Column)({ unique: true }),
@@ -38,6 +28,10 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.Column)("int", { default: 0 }),
+    __metadata("design:type", Number)
+], User.prototype, "tokenVersion", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => String),
     (0, typeorm_1.CreateDateColumn)(),
@@ -50,7 +44,7 @@ __decorate([
 ], User.prototype, "updatedAt", void 0);
 User = __decorate([
     (0, type_graphql_1.ObjectType)(),
-    (0, typeorm_1.Entity)('user')
+    (0, typeorm_1.Entity)()
 ], User);
 exports.User = User;
 //# sourceMappingURL=User.js.map
