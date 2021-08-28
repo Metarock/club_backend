@@ -8,10 +8,12 @@ import { UserResolver } from "./resolvers/user";
 
 
 const main = async () => {
+    await createConnection();
+
+
     const app = express();
     app.get("/", (_req, res) => res.send("hello"));
 
-    await createConnection();
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
@@ -20,7 +22,7 @@ const main = async () => {
     })
 
     apolloServer.applyMiddleware({ app });
-    app.listen(4000, () => {
+    app.listen(parseInt(process.env.PORT), () => {
         console.log("server working");
     })
 }
