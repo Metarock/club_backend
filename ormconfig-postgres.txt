@@ -4,8 +4,6 @@
     "username": "dbezkkue",
     "password": "eiSkSsUQ1toLTXkkv4Rmav8OiJJjHN54",
     "database": "dbezkkue",
-    "synchronize": true,
-    "logging": false,
     "entities": [
         "dist/entities/*.js"
     ],

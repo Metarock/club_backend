@@ -1,32 +1,26 @@
+import { cp } from "fs";
 import { Field, ObjectType } from "type-graphql";
-import { BaseEntity, Column, CreateDateColumn, Entity, ObjectIdColumn, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-
-
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @ObjectType()
 @Entity()
 export class User extends BaseEntity {
-
     @Field()
     @PrimaryGeneratedColumn()
-    id: string;
+    id!: number;
 
-    @Field()
     @Column({ unique: true })
+    @Field()
     email!: string;
 
-    //allowing users to select password as it will be hashed
     @Column()
     password!: string;
 
-    @Column("int", { default: 0 })
-    tokenVersion: number;
-
     @Field(() => String)
     @CreateDateColumn()
-    createdAt: Date;
+    createdAt!: Date;
 
-    @Field(() => String)
+    @Field()
     @UpdateDateColumn()
-    updatedAt: Date;
+    updatedAt!: Date;
 }
