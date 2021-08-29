@@ -5,6 +5,7 @@ import { UsernamePasswordInput } from "../shared/UsernamePasswordInput";
 import { MyContext } from "../types";
 import { validateRegister } from "../utils/validateRegister";
 import { getConnection } from "typeorm";
+import { COOKIE_NAME } from "../shared/constants";
 
 @ObjectType()
 class FieldError {
@@ -39,6 +40,55 @@ export class UserResolver {
         return User.find();
     }
 
+    @Query(() => User, { nullable: true })
+
+    async me(@Ctx() { req }: MyContext): Promise<User | undefined> {
+        if (req.session.userId) {
+            return User.findOne(req.session.userId);
+        }
+        return undefined //if not found
+    }
+
+    //login
+    @Mutation(() => UserResponse)
+    async login(
+        @Arg('usernameOrEmail') usernameOrEmail: string,
+        @Arg("password") password: string,
+        @Ctx() { req }: MyContext
+    ): Promise<UserResponse> { //promise to return variable name user
+        //verify if username or email exists
+        const user = await User.findOne(usernameOrEmail.includes('@') ? { where: { email: usernameOrEmail } } : { where: { clubUsername: usernameOrEmail } });
+
+        //if user is not found
+        if (!user) {
+            return {
+                errors: [{
+                    field: 'usernameorEmail',
+                    message: 'username does not exist'
+                }]
+            }
+        }
+
+        //validate password
+        const valid = await argon2.verify(user.password, password);
+
+        if (!valid) {
+            return {
+                errors: [{
+                    field: 'password',
+                    message: 'inputted the wrong password'
+                }]
+            }
+        }
+
+        req.session.userId = user.id;
+
+        console.log("user id (logged in): ", req.session.userId);
+
+        return { user };
+    }
+
+    //registration
     @Mutation(() => UserResponse)
     async register(
         @Arg('options') options: UsernamePasswordInput,
@@ -91,6 +141,23 @@ export class UserResolver {
 
         console
         return { user };
+    }
+
+    //log out
+    @Mutation(() => Boolean)
+    logout(
+        @Ctx() { req, res }: MyContext
+    ) {
+        return new Promise((resolve) => req.session.destroy(err => {
+            if (err) {
+                console.log("error in logging out: ", err);
+                resolve(false)
+                return
+            }
+            console.log("logged out successfully");
+            resolve(true);
+            res.clearCookie(COOKIE_NAME);
+        }))
     }
 
 }

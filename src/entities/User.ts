@@ -32,7 +32,7 @@ export class User extends BaseEntity {
     @CreateDateColumn()
     createdAt!: Date;
 
-    @Field()
+    @Field(() => String)
     @UpdateDateColumn()
     updatedAt!: Date;
 }

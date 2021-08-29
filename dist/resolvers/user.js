@@ -47,6 +47,7 @@ const type_graphql_1 = require("type-graphql");
 const UsernamePasswordInput_1 = require("../shared/UsernamePasswordInput");
 const validateRegister_1 = require("../utils/validateRegister");
 const typeorm_1 = require("typeorm");
+const constants_1 = require("../shared/constants");
 let FieldError = class FieldError {
 };
 __decorate([
@@ -80,6 +81,39 @@ let UserResolver = class UserResolver {
     users() {
         return __awaiter(this, void 0, void 0, function* () {
             return User_1.User.find();
+        });
+    }
+    me({ req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (req.session.userId) {
+                return User_1.User.findOne(req.session.userId);
+            }
+            return undefined;
+        });
+    }
+    login(usernameOrEmail, password, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield User_1.User.findOne(usernameOrEmail.includes('@') ? { where: { email: usernameOrEmail } } : { where: { clubUsername: usernameOrEmail } });
+            if (!user) {
+                return {
+                    errors: [{
+                            field: 'usernameorEmail',
+                            message: 'username does not exist'
+                        }]
+                };
+            }
+            const valid = yield argon2.verify(user.password, password);
+            if (!valid) {
+                return {
+                    errors: [{
+                            field: 'password',
+                            message: 'inputted the wrong password'
+                        }]
+                };
+            }
+            req.session.userId = user.id;
+            console.log("user id (logged in): ", req.session.userId);
+            return { user };
         });
     }
     register(options, { req }) {
@@ -125,6 +159,18 @@ let UserResolver = class UserResolver {
             return { user };
         });
     }
+    logout({ req, res }) {
+        return new Promise((resolve) => req.session.destroy(err => {
+            if (err) {
+                console.log("error in logging out: ", err);
+                resolve(false);
+                return;
+            }
+            console.log("logged out successfully");
+            resolve(true);
+            res.clearCookie(constants_1.COOKIE_NAME);
+        }));
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => String),
@@ -139,6 +185,22 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "users", null);
 __decorate([
+    (0, type_graphql_1.Query)(() => User_1.User, { nullable: true }),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "me", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => UserResponse),
+    __param(0, (0, type_graphql_1.Arg)('usernameOrEmail')),
+    __param(1, (0, type_graphql_1.Arg)("password")),
+    __param(2, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "login", null);
+__decorate([
     (0, type_graphql_1.Mutation)(() => UserResponse),
     __param(0, (0, type_graphql_1.Arg)('options')),
     __param(1, (0, type_graphql_1.Ctx)()),
@@ -146,6 +208,13 @@ __decorate([
     __metadata("design:paramtypes", [UsernamePasswordInput_1.UsernamePasswordInput, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "register", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UserResolver.prototype, "logout", null);
 UserResolver = __decorate([
     (0, type_graphql_1.Resolver)(User_1.User)
 ], UserResolver);
