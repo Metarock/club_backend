@@ -52,12 +52,39 @@ PaginatedPosts = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], PaginatedPosts);
 let PostResolver = class PostResolver {
+    posts() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return Post_1.Post.find();
+        });
+    }
+    post(id) {
+        return Post_1.Post.findOne(id);
+    }
     createPost(input, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
             return Post_1.Post.create(Object.assign(Object.assign({}, input), { creatorId: req.session.userId })).save();
         });
     }
+    deletePost(id, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Post_1.Post.delete({ id, creatorId: req.session.userId });
+            return true;
+        });
+    }
 };
+__decorate([
+    (0, type_graphql_1.Query)(() => [Post_1.Post]),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PostResolver.prototype, "posts", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => Post_1.Post, { nullable: true }),
+    __param(0, (0, type_graphql_1.Arg)('id', () => type_graphql_1.Int)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], PostResolver.prototype, "post", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => Post_1.Post),
     (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
@@ -67,6 +94,15 @@ __decorate([
     __metadata("design:paramtypes", [PostInput, Object]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "createPost", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Boolean),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    __param(0, (0, type_graphql_1.Arg)('id', () => type_graphql_1.Int)),
+    __param(1, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], PostResolver.prototype, "deletePost", null);
 PostResolver = __decorate([
     (0, type_graphql_1.Resolver)(Post_1.Post)
 ], PostResolver);
