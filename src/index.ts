@@ -7,10 +7,11 @@ import Redis from 'ioredis';
 import { User } from "./entities/User";
 import connectRedis from "connect-redis";
 import session from "express-session";
-import { REDIS_HOSTNAME, REDIS_PORT, REDIS_PASSWORD } from "./shared/constants";
+import { REDIS_HOSTNAME, REDIS_PORT, REDIS_PASSWORD, COOKIE_NAME, _prod_ } from "./shared/constants";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { UserResolver } from "./resolvers/user";
+import { Post } from "./entities/Post";
 
 
 const main = async () => {
@@ -20,10 +21,12 @@ const main = async () => {
         logging: true,
         synchronize: true,
         migrations: [path.join(__dirname, './migrations/*')],
-        entities: [User]
+        entities: [User, Post]
     })
 
     conn.runMigrations();
+
+    // await User.delete({ })
 
     const app = express()
 
@@ -44,6 +47,26 @@ const main = async () => {
     });
 
     app.set("trust proxy", 1);
+
+    app.use(
+        session({
+            name: COOKIE_NAME,
+            store: new RedisStore({
+                client: redis,
+                disableTouch: true
+            }),
+            cookie: {
+                path: "/",
+                maxAge: 1000 * 60 * 60 * 24 * 365 * 10, //cookie durations
+                httpOnly: true,
+                sameSite: 'lax',
+                secure: _prod_
+            },
+            saveUninitialized: false,
+            secret: process.env.SESSION_SECRET,
+            resave: false
+        }))
+
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({

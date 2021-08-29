@@ -1,38 +1,33 @@
-import { cp } from "fs";
 import { Field, ObjectType } from "type-graphql";
 import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
+
+//decorators
 @ObjectType()
 @Entity()
-export class User extends BaseEntity {
+export class Post extends BaseEntity {
     @Field()
     @PrimaryGeneratedColumn()
-    id!: number;
-
-    @Field()
-    @Column({ unique: true })
-    email!: string;
+    id!: number; //string is also supported
 
     @Field()
     @Column({ type: 'text' })
-    university: string;
+    title!: string; //for club title
 
     @Field()
-    @Column({ unique: true })
-    clubUsername: string;
-
-    @Field()
-    @Column({ type: 'text' })
-    clubName: string;
-
     @Column()
-    password!: string;
+    text!: string;
+
+    @Field()
+    @Column()
+    creatorId: number; //which club id posted it
 
     @Field(() => String)
     @CreateDateColumn()
     createdAt!: Date;
 
-    @Field()
+    @Field(() => String)
     @UpdateDateColumn()
     updatedAt!: Date;
+
 }
