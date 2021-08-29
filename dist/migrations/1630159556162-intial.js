@@ -11,11 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.intial1630159556162 = void 0;
 class intial1630159556162 {
-    up(queryRunner) {
+    up(_queryRunner) {
         return __awaiter(this, void 0, void 0, function* () {
         });
     }
-    down(queryRunner) {
+    down(_queryRunner) {
         return __awaiter(this, void 0, void 0, function* () {
         });
     }
