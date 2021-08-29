@@ -1,6 +1,7 @@
-Club owners
+Club owners 
 -Able to register (DONE)
 -able to log in (DONE)
--able to log out
--able to post image and description
+-able to log out (DONE)
+-able to create post(DONE)
+-able to post image and description (API cloudinary.com)
 - are only allowed to post one card, they cannot post multiple

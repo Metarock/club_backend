@@ -12,6 +12,7 @@ import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { UserResolver } from "./resolvers/user";
 import { Post } from "./entities/Post";
+import { PostResolver } from "./resolvers/post";
 
 
 const main = async () => {
@@ -70,7 +71,7 @@ const main = async () => {
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [UserResolver],
+            resolvers: [UserResolver, PostResolver],
             validate: false
         }),
         context: ({ req, res }) => ({ req, res })
