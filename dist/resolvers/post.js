@@ -25,6 +25,7 @@ exports.PostResolver = void 0;
 const Post_1 = require("../entities/Post");
 const type_graphql_1 = require("type-graphql");
 const isAuth_1 = require("../middleware/isAuth");
+const FieldError_1 = require("../shared/FieldError");
 let PostInput = class PostInput {
 };
 __decorate([
@@ -35,6 +36,10 @@ __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
 ], PostInput.prototype, "text", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], PostInput.prototype, "imgUrl", void 0);
 PostInput = __decorate([
     (0, type_graphql_1.InputType)()
 ], PostInput);
@@ -51,6 +56,19 @@ __decorate([
 PaginatedPosts = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], PaginatedPosts);
+let PostResponse = class PostResponse {
+};
+__decorate([
+    (0, type_graphql_1.Field)(() => [FieldError_1.FieldError], { nullable: true }),
+    __metadata("design:type", Array)
+], PostResponse.prototype, "errors", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => Post_1.Post, { nullable: true }),
+    __metadata("design:type", Post_1.Post)
+], PostResponse.prototype, "post", void 0);
+PostResponse = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], PostResponse);
 let PostResolver = class PostResolver {
     posts() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -62,7 +80,17 @@ let PostResolver = class PostResolver {
     }
     createPost(input, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
-            return Post_1.Post.create(Object.assign(Object.assign({}, input), { creatorId: req.session.userId })).save();
+            const clubOwner = yield Post_1.Post.findOne({ where: { creatorId: req.session.userId } });
+            if (clubOwner) {
+                return {
+                    errors: [{
+                            field: 'Create page',
+                            message: 'Can only post once'
+                        }]
+                };
+            }
+            const post = yield Post_1.Post.create(Object.assign(Object.assign({}, input), { creatorId: req.session.userId })).save();
+            return { post };
         });
     }
     deletePost(id, { req }) {
@@ -86,7 +114,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "post", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => Post_1.Post),
+    (0, type_graphql_1.Mutation)(() => PostResponse),
     (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
     __param(0, (0, type_graphql_1.Arg)('input')),
     __param(1, (0, type_graphql_1.Ctx)()),

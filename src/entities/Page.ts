@@ -2,25 +2,33 @@ import { Field, ObjectType } from "type-graphql";
 import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 
+//decorators
 @ObjectType()
 @Entity()
-export class Post extends BaseEntity {
-
+export class Page extends BaseEntity {
     @Field()
     @PrimaryGeneratedColumn()
     id!: number; //string is also supported
 
     @Field()
-    @Column()
-    title!: string;
+    @Column({ type: 'text' })
+    pageTitle!: string; //for club title
 
     @Field()
     @Column()
-    text!: string;
+    pageText!: string;
 
     @Field()
     @Column()
-    postCreatorId: string;
+    aboutUs!: string;
+
+    @Field(() => String, { nullable: true })
+    @Column({ nullable: true })
+    pageimgUrl!: string;
+
+    @Field()
+    @Column()
+    creatorId: number; //which club id posted it
 
     @Field(() => String)
     @CreateDateColumn()
@@ -29,4 +37,5 @@ export class Post extends BaseEntity {
     @Field(() => String)
     @UpdateDateColumn()
     updatedAt!: Date;
+
 }
