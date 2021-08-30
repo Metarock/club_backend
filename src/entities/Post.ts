@@ -20,7 +20,7 @@ export class Post extends BaseEntity {
 
     @Field()
     @Column()
-    postCreatorId: string;
+    postCreatorId: number;
 
     @Field(() => String)
     @CreateDateColumn()

@@ -7,18 +7,19 @@ import { FieldError } from "../shared/FieldError";
 //TODO 
 // RENAME TO CREATE PAGE
 @InputType()
-class PostInput {
+class PageInput {
     @Field()
-    title: string;
+    pageTitle: string;
     @Field()
-    text: string;
-
+    pageText: string;
     @Field()
-    imgUrl: string;
+    aboutUs: string;
+    @Field()
+    pageimgUrl: string;
 }
 
 @ObjectType()
-class PaginatedPosts {
+class PaginatedPage {
     @Field(() => [Page])
     posts: Page[]
     @Field()
@@ -54,7 +55,7 @@ export class PageResolver {
     @Mutation(() => PageResponse)
     @UseMiddleware(isAuth) //authentication for posting first
     async createPage(
-        @Arg('input') input: PostInput,
+        @Arg('input') input: PageInput,
         @Ctx() { req }: MyContext
     ): Promise<PageResponse> {
 
@@ -74,6 +75,8 @@ export class PageResolver {
             ...input,
             creatorId: req.session.userId //get session id
         }).save();
+
+        req.session.pageId = page.id; //saves page id
 
         return { page }
     }

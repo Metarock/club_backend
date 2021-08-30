@@ -9,44 +9,54 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Post = void 0;
+exports.Page = void 0;
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
-let Post = class Post extends typeorm_1.BaseEntity {
+let Page = class Page extends typeorm_1.BaseEntity {
 };
 __decorate([
     (0, type_graphql_1.Field)(),
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], Post.prototype, "id", void 0);
+], Page.prototype, "id", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    (0, typeorm_1.Column)({ type: 'text' }),
+    __metadata("design:type", String)
+], Page.prototype, "pageTitle", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Post.prototype, "title", void 0);
+], Page.prototype, "pageText", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Post.prototype, "text", void 0);
+], Page.prototype, "aboutUs", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => String, { nullable: true }),
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Page.prototype, "pageimgUrl", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
-], Post.prototype, "postCreatorId", void 0);
+], Page.prototype, "creatorId", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => String),
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
-], Post.prototype, "createdAt", void 0);
+], Page.prototype, "createdAt", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => String),
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
-], Post.prototype, "updatedAt", void 0);
-Post = __decorate([
+], Page.prototype, "updatedAt", void 0);
+Page = __decorate([
     (0, type_graphql_1.ObjectType)(),
     (0, typeorm_1.Entity)()
-], Post);
-exports.Post = Post;
-//# sourceMappingURL=Post.js.map
+], Page);
+exports.Page = Page;
+//# sourceMappingURL=Page.js.map

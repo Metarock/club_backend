@@ -25,6 +25,8 @@ const constants_1 = require("./shared/constants");
 const apollo_server_express_1 = require("apollo-server-express");
 const type_graphql_1 = require("type-graphql");
 const user_1 = require("./resolvers/user");
+const Page_1 = require("./entities/Page");
+const page_1 = require("./resolvers/page");
 const Post_1 = require("./entities/Post");
 const post_1 = require("./resolvers/post");
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -34,7 +36,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         logging: true,
         synchronize: true,
         migrations: [path_1.default.join(__dirname, './migrations/*')],
-        entities: [User_1.User, Post_1.Post]
+        entities: [User_1.User, Page_1.Page, Post_1.Post]
     });
     conn.runMigrations();
     const app = (0, express_1.default)();
@@ -71,7 +73,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     }));
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: yield (0, type_graphql_1.buildSchema)({
-            resolvers: [user_1.UserResolver, post_1.PostResolver],
+            resolvers: [user_1.UserResolver, page_1.PageResolver, post_1.PostResolver],
             validate: false
         }),
         context: ({ req, res }) => ({ req, res })
