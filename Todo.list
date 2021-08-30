@@ -2,6 +2,11 @@ Club owners
 -Able to register (DONE)
 -able to log in (DONE)
 -able to log out (DONE)
--able to create post(DONE)
+-able to create page(DONE)
+-able to update page()
 -able to post image and description (API cloudinary.com)
 - are only allowed to post one card, they cannot post multiple
+
+
+--IN THE FUTURE
+- clubs can start posting on their dedicated page

@@ -6,16 +6,7 @@ import { MyContext } from "../types";
 import { validateRegister } from "../utils/validateRegister";
 import { getConnection } from "typeorm";
 import { COOKIE_NAME } from "../shared/constants";
-
-@ObjectType()
-class FieldError {
-    @Field()
-    field: string;
-
-    @Field()
-    message: string;
-}
-
+import { FieldError } from "../shared/FieldError";
 
 @ObjectType()
 class UserResponse {

@@ -16,4 +16,5 @@ export class UsernamePasswordInput {
 
     @Field()
     clubName: string;
+
 }

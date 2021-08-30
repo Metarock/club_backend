@@ -21,80 +21,123 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PostResolver = void 0;
-const Post_1 = require("../entities/Post");
+exports.PageResolver = void 0;
+const Page_1 = require("../entities/Page");
 const type_graphql_1 = require("type-graphql");
+const isAuth_1 = require("../middleware/isAuth");
 const FieldError_1 = require("../shared/FieldError");
-const isPostAuth_1 = require("../middleware/isPostAuth");
-let PostInput = class PostInput {
+let PageInput = class PageInput {
 };
 __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
-], PostInput.prototype, "title", void 0);
+], PageInput.prototype, "pageTitle", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
     __metadata("design:type", String)
-], PostInput.prototype, "text", void 0);
-PostInput = __decorate([
+], PageInput.prototype, "pageText", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], PageInput.prototype, "aboutUs", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", String)
+], PageInput.prototype, "pageimgUrl", void 0);
+PageInput = __decorate([
     (0, type_graphql_1.InputType)()
-], PostInput);
-let PostResponse = class PostResponse {
+], PageInput);
+let PaginatedPage = class PaginatedPage {
+};
+__decorate([
+    (0, type_graphql_1.Field)(() => [Page_1.Page]),
+    __metadata("design:type", Array)
+], PaginatedPage.prototype, "posts", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Boolean)
+], PaginatedPage.prototype, "hasMore", void 0);
+PaginatedPage = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], PaginatedPage);
+let PageResponse = class PageResponse {
 };
 __decorate([
     (0, type_graphql_1.Field)(() => [FieldError_1.FieldError], { nullable: true }),
     __metadata("design:type", Array)
-], PostResponse.prototype, "errors", void 0);
+], PageResponse.prototype, "errors", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(() => Post_1.Post, { nullable: true }),
-    __metadata("design:type", Post_1.Post)
-], PostResponse.prototype, "post", void 0);
-PostResponse = __decorate([
+    (0, type_graphql_1.Field)(() => Page_1.Page, { nullable: true }),
+    __metadata("design:type", Page_1.Page)
+], PageResponse.prototype, "page", void 0);
+PageResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
-], PostResponse);
-let PostResolver = class PostResolver {
-    post(id) {
-        return Post_1.Post.findOne(id);
-    }
-    createPost(input, { req }) {
+], PageResponse);
+let PageResolver = class PageResolver {
+    pages() {
         return __awaiter(this, void 0, void 0, function* () {
-            return Post_1.Post.create(Object.assign(Object.assign({}, input), { postCreatorId: req.session.pageId })).save();
+            return Page_1.Page.find();
         });
     }
-    deletePost(id, { req }) {
+    page(id) {
+        return Page_1.Page.findOne(id);
+    }
+    createPage(input, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield Post_1.Post.delete({ id, postCreatorId: req.session.pageId });
+            const clubOwner = yield Page_1.Page.findOne({ where: { creatorId: req.session.userId } });
+            if (clubOwner) {
+                return {
+                    errors: [{
+                            field: 'Create page',
+                            message: 'Can only post once'
+                        }]
+                };
+            }
+            const page = yield Page_1.Page.create(Object.assign(Object.assign({}, input), { creatorId: req.session.userId })).save();
+            req.session.pageId = page.id;
+            return { page };
+        });
+    }
+    deletePage(id, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Page_1.Page.delete({ id, creatorId: req.session.userId });
             return true;
         });
     }
 };
 __decorate([
-    (0, type_graphql_1.Query)(() => Post_1.Post, { nullable: true }),
+    (0, type_graphql_1.Query)(() => [Page_1.Page]),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PageResolver.prototype, "pages", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => Page_1.Page, { nullable: true }),
     __param(0, (0, type_graphql_1.Arg)('id', () => type_graphql_1.Int)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
-], PostResolver.prototype, "post", null);
+], PageResolver.prototype, "page", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => Post_1.Post),
-    (0, type_graphql_1.UseMiddleware)(isPostAuth_1.isPostAuth),
+    (0, type_graphql_1.Mutation)(() => PageResponse),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
     __param(0, (0, type_graphql_1.Arg)('input')),
     __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [PostInput, Object]),
+    __metadata("design:paramtypes", [PageInput, Object]),
     __metadata("design:returntype", Promise)
-], PostResolver.prototype, "createPost", null);
+], PageResolver.prototype, "createPage", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => Boolean),
-    (0, type_graphql_1.UseMiddleware)(isPostAuth_1.isPostAuth),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
     __param(0, (0, type_graphql_1.Arg)('id', () => type_graphql_1.Int)),
     __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
-], PostResolver.prototype, "deletePost", null);
-PostResolver = __decorate([
-    (0, type_graphql_1.Resolver)(Post_1.Post)
-], PostResolver);
-exports.PostResolver = PostResolver;
-//# sourceMappingURL=post.js.map
+], PageResolver.prototype, "deletePage", null);
+PageResolver = __decorate([
+    (0, type_graphql_1.Resolver)(Page_1.Page)
+], PageResolver);
+exports.PageResolver = PageResolver;
+//# sourceMappingURL=page.js.map

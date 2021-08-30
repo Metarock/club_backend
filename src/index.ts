@@ -11,6 +11,8 @@ import { REDIS_HOSTNAME, REDIS_PORT, REDIS_PASSWORD, COOKIE_NAME, _prod_ } from 
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { UserResolver } from "./resolvers/user";
+import { Page } from "./entities/Page";
+import { PageResolver } from "./resolvers/page";
 import { Post } from "./entities/Post";
 import { PostResolver } from "./resolvers/post";
 
@@ -22,7 +24,7 @@ const main = async () => {
         logging: true,
         synchronize: true,
         migrations: [path.join(__dirname, './migrations/*')],
-        entities: [User, Post]
+        entities: [User, Page, Post]
     })
 
     conn.runMigrations();
@@ -71,7 +73,7 @@ const main = async () => {
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [UserResolver, PostResolver],
+            resolvers: [UserResolver, PageResolver, PostResolver],
             validate: false
         }),
         context: ({ req, res }) => ({ req, res })
