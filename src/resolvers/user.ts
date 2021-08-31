@@ -30,6 +30,11 @@ export class UserResolver {
         return "azure is updated";
     }
 
+    @Query(() => String)
+    doubleChecking() {
+        return "double checking it works";
+    }
+
     @Query(() => [User])
     //return an array of post
     async users(): Promise<User[]> {
