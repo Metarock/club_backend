@@ -29,6 +29,7 @@ const Page_1 = require("./entities/Page");
 const page_1 = require("./resolvers/page");
 const Post_1 = require("./entities/Post");
 const post_1 = require("./resolvers/post");
+const cors_1 = __importDefault(require("cors"));
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const conn = yield (0, typeorm_1.createConnection)({
         type: 'postgres',
@@ -54,6 +55,10 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         console.log('Redis error: ' + err);
     });
     app.set("trust proxy", 1);
+    app.use((0, cors_1.default)({
+        origin: process.env.CORS_ORIGIN,
+        credentials: true,
+    }));
     app.use((0, express_session_1.default)({
         name: constants_1.COOKIE_NAME,
         store: new RedisStore({
@@ -65,7 +70,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
             httpOnly: true,
             sameSite: 'lax',
-            secure: constants_1._prod_
+            secure: constants_1._prod_,
         },
         saveUninitialized: false,
         secret: process.env.SESSION_SECRET,
@@ -76,7 +81,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             resolvers: [user_1.UserResolver, page_1.PageResolver, post_1.PostResolver],
             validate: false
         }),
-        context: ({ req, res }) => ({ req, res })
+        context: ({ req, res }) => ({ req, res, redis })
     });
     apolloServer.applyMiddleware({ app, cors: false });
     app.listen(parseInt(process.env.PORT), () => {

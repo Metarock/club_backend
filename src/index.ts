@@ -15,6 +15,7 @@ import { Page } from "./entities/Page";
 import { PageResolver } from "./resolvers/page";
 import { Post } from "./entities/Post";
 import { PostResolver } from "./resolvers/post";
+import cors from "cors";
 
 
 const main = async () => {
@@ -51,6 +52,10 @@ const main = async () => {
 
     app.set("trust proxy", 1);
 
+    app.use(cors({
+        origin: process.env.CORS_ORIGIN,
+        credentials: true,
+    }))
     app.use(
         session({
             name: COOKIE_NAME,
@@ -63,7 +68,7 @@ const main = async () => {
                 maxAge: 1000 * 60 * 60 * 24 * 365 * 10, //cookie durations
                 httpOnly: true,
                 sameSite: 'lax',
-                secure: _prod_
+                secure: _prod_,
             },
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
@@ -76,7 +81,7 @@ const main = async () => {
             resolvers: [UserResolver, PageResolver, PostResolver],
             validate: false
         }),
-        context: ({ req, res }) => ({ req, res })
+        context: ({ req, res }) => ({ req, res, redis })
     })
 
     apolloServer.applyMiddleware({ app, cors: false })
