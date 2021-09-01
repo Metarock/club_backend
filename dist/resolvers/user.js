@@ -97,7 +97,7 @@ let UserResolver = class UserResolver {
             }
         });
     }
-    login(usernameOrEmail, password, { res, userPayLoad }) {
+    login(usernameOrEmail, password, { res }) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.User.findOne(usernameOrEmail.includes('@') ? { where: { email: usernameOrEmail } } : { where: { clubUsername: usernameOrEmail } });
             if (!user) {

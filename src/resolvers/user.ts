@@ -62,7 +62,7 @@ export class UserResolver {
     async login(
         @Arg('usernameOrEmail') usernameOrEmail: string,
         @Arg("password") password: string,
-        @Ctx() { res, userPayLoad }: MyContext
+        @Ctx() { res }: MyContext
     ): Promise<UserResponse> { //promise to return variable name user
         //verify if username or email exists
         const user = await User.findOne(usernameOrEmail.includes('@') ? { where: { email: usernameOrEmail } } : { where: { clubUsername: usernameOrEmail } });
