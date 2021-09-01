@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.pageCreateRefreshToken = exports.pageCreateAccessToken = exports.createRefreshToken = exports.createAccessToken = void 0;
+exports.pageCreateAccessToken = exports.createRefreshToken = exports.createAccessToken = void 0;
 const jsonwebtoken_1 = require("jsonwebtoken");
 const createAccessToken = (user) => {
     return (0, jsonwebtoken_1.sign)({ userId: user.id, }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
@@ -14,8 +14,4 @@ const pageCreateAccessToken = (page) => {
     return (0, jsonwebtoken_1.sign)({ pageId: page.id, }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
 };
 exports.pageCreateAccessToken = pageCreateAccessToken;
-const pageCreateRefreshToken = (page) => {
-    return (0, jsonwebtoken_1.sign)({ pageId: page.id, tokenVersion: page.tokenVersion }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
-};
-exports.pageCreateRefreshToken = pageCreateRefreshToken;
 //# sourceMappingURL=auth.js.map

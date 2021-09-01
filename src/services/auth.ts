@@ -24,9 +24,9 @@ export const pageCreateAccessToken = (page: Page) => {
         { expiresIn: "15m" })
 }
 
-export const pageCreateRefreshToken = (page: Page) => {
-    return sign(
-        { pageId: page.id, tokenVersion: page.tokenVersion },
-        process.env.REFRESH_TOKEN_SECRET!,
-        { expiresIn: "7d" })
-}
+// export const pageCreateRefreshToken = (page: Page) => {
+//     return sign(
+//         { pageId: page.id, tokenVersion: page.tokenVersion },
+//         process.env.REFRESH_TOKEN_SECRET!,
+//         { expiresIn: "7d" })
+// }

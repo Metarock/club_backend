@@ -83,33 +83,20 @@ let PageResolver = class PageResolver {
     page(id) {
         return Page_1.Page.findOne(id);
     }
-    createPage(input, context) {
+    createPage(input, { userPayLoad }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const authorization = context.req.headers['authorization'];
-            let user = '';
-            if (!authorization) {
-                return null;
+            console.log("user id in create post: ", userPayLoad);
+            const clubOwner = yield Page_1.Page.findOne({ where: { creatorId: userPayLoad === null || userPayLoad === void 0 ? void 0 : userPayLoad.userId } });
+            if (clubOwner) {
+                return {
+                    errors: [{
+                            field: 'Create page',
+                            message: 'Can only post once'
+                        }]
+                };
             }
-            try {
-                const token = authorization.split(' ')[1];
-                const payload = (0, jsonwebtoken_1.verify)(token, process.env.ACCESS_TOKEN_SECRET);
-                user = payload.userId;
-                const clubOwner = yield Page_1.Page.findOne({ where: { creatorId: payload.userId } });
-                if (clubOwner) {
-                    return {
-                        errors: [{
-                                field: 'Create page',
-                                message: 'Can only post once'
-                            }]
-                    };
-                }
-                const page = yield Page_1.Page.create(Object.assign(Object.assign({}, input), { creatorId: user })).save();
-                return { page };
-            }
-            catch (err) {
-                console.log(err);
-                return null;
-            }
+            const page = yield Page_1.Page.create(Object.assign(Object.assign({}, input), { creatorId: userPayLoad === null || userPayLoad === void 0 ? void 0 : userPayLoad.userId })).save();
+            return { page };
         });
     }
     deletePage(id, context) {

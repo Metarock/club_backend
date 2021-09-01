@@ -1,15 +1,14 @@
 import * as argon2 from "argon2";
-import { User } from "../entities/User";
+import { verify } from "jsonwebtoken";
 import { Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import { getConnection } from "typeorm";
+import { User } from "../entities/User";
+import { createAccessToken } from "../services/auth";
+import { sendRefreshToken } from "../services/sendRefreshToken";
+import { FieldError } from "../shared/FieldError";
 import { UsernamePasswordInput } from "../shared/UsernamePasswordInput";
 import { MyContext } from "../types";
 import { validateRegister } from "../utils/validateRegister";
-import { getConnection } from "typeorm";
-import { COOKIE_NAME } from "../shared/constants";
-import { FieldError } from "../shared/FieldError";
-import { verify } from "jsonwebtoken";
-import { sendRefreshToken } from "../services/sendRefreshToken";
-import { createAccessToken } from "../services/auth";
 
 @ObjectType()
 class UserResponse {
@@ -26,25 +25,19 @@ class UserResponse {
 @Resolver(User)
 export class UserResolver {
 
-    @Query(() => String)
-    hello() {
-        return "hi there";
-    }
-
-    @Query(() => String)
-    azureupdated() {
-        return "azure is updated";
-    }
-
-    @Query(() => String)
-    doubleChecking() {
-        return "double checking it works";
-    }
-
     @Query(() => [User])
     //return an array of post
     async users(): Promise<User[]> {
         return User.find();
+    }
+
+    @Mutation(() => Boolean)
+    async revokeRefreshTokensForUser(
+        @Arg('userId') userId: string
+    ) {
+        await getConnection().getRepository(User).increment({ id: userId }, "tokenVersion", 1);
+
+        return true;
     }
 
     @Query(() => User, { nullable: true })
@@ -69,7 +62,7 @@ export class UserResolver {
     async login(
         @Arg('usernameOrEmail') usernameOrEmail: string,
         @Arg("password") password: string,
-        @Ctx() { res }: MyContext
+        @Ctx() { res, userPayLoad }: MyContext
     ): Promise<UserResponse> { //promise to return variable name user
         //verify if username or email exists
         const user = await User.findOne(usernameOrEmail.includes('@') ? { where: { email: usernameOrEmail } } : { where: { clubUsername: usernameOrEmail } });
@@ -101,7 +94,6 @@ export class UserResolver {
         sendRefreshToken(res, createAccessToken(user));
 
         console.log("user id (logged in): ", user.id);
-
         return {
             accessToken: createAccessToken(user),
             user
@@ -172,7 +164,7 @@ export class UserResolver {
     //log out
     @Mutation(() => Boolean)
     logout(
-        @Ctx() { req, res }: MyContext
+        @Ctx() { res }: MyContext
     ) {
         sendRefreshToken(res, "");
         return true;

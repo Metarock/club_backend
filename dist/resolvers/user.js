@@ -42,15 +42,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserResolver = void 0;
 const argon2 = __importStar(require("argon2"));
-const User_1 = require("../entities/User");
+const jsonwebtoken_1 = require("jsonwebtoken");
 const type_graphql_1 = require("type-graphql");
+const typeorm_1 = require("typeorm");
+const User_1 = require("../entities/User");
+const auth_1 = require("../services/auth");
+const sendRefreshToken_1 = require("../services/sendRefreshToken");
+const FieldError_1 = require("../shared/FieldError");
 const UsernamePasswordInput_1 = require("../shared/UsernamePasswordInput");
 const validateRegister_1 = require("../utils/validateRegister");
-const typeorm_1 = require("typeorm");
-const FieldError_1 = require("../shared/FieldError");
-const jsonwebtoken_1 = require("jsonwebtoken");
-const sendRefreshToken_1 = require("../services/sendRefreshToken");
-const auth_1 = require("../services/auth");
 let UserResponse = class UserResponse {
 };
 __decorate([
@@ -69,18 +69,15 @@ UserResponse = __decorate([
     (0, type_graphql_1.ObjectType)()
 ], UserResponse);
 let UserResolver = class UserResolver {
-    hello() {
-        return "hi there";
-    }
-    azureupdated() {
-        return "azure is updated";
-    }
-    doubleChecking() {
-        return "double checking it works";
-    }
     users() {
         return __awaiter(this, void 0, void 0, function* () {
             return User_1.User.find();
+        });
+    }
+    revokeRefreshTokensForUser(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield (0, typeorm_1.getConnection)().getRepository(User_1.User).increment({ id: userId }, "tokenVersion", 1);
+            return true;
         });
     }
     me(context) {
@@ -100,7 +97,7 @@ let UserResolver = class UserResolver {
             }
         });
     }
-    login(usernameOrEmail, password, { res }) {
+    login(usernameOrEmail, password, { res, userPayLoad }) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.User.findOne(usernameOrEmail.includes('@') ? { where: { email: usernameOrEmail } } : { where: { clubUsername: usernameOrEmail } });
             if (!user) {
@@ -179,35 +176,24 @@ let UserResolver = class UserResolver {
             };
         });
     }
-    logout({ req, res }) {
+    logout({ res }) {
         (0, sendRefreshToken_1.sendRefreshToken)(res, "");
         return true;
     }
 };
-__decorate([
-    (0, type_graphql_1.Query)(() => String),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], UserResolver.prototype, "hello", null);
-__decorate([
-    (0, type_graphql_1.Query)(() => String),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], UserResolver.prototype, "azureupdated", null);
-__decorate([
-    (0, type_graphql_1.Query)(() => String),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], UserResolver.prototype, "doubleChecking", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [User_1.User]),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "users", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, type_graphql_1.Arg)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "revokeRefreshTokensForUser", null);
 __decorate([
     (0, type_graphql_1.Query)(() => User_1.User, { nullable: true }),
     __param(0, (0, type_graphql_1.Ctx)()),

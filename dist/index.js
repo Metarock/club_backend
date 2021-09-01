@@ -25,6 +25,9 @@ const Page_1 = require("./entities/Page");
 const page_1 = require("./resolvers/page");
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const jsonwebtoken_1 = require("jsonwebtoken");
+const auth_1 = require("./services/auth");
+const sendRefreshToken_1 = require("./services/sendRefreshToken");
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const conn = yield (0, typeorm_1.createConnection)({
         type: 'postgres',
@@ -42,6 +45,31 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         credentials: true,
     }));
     app.use((0, cookie_parser_1.default)());
+    app.post("/refresh_token", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const token = req.cookies.jid;
+        console.log("headers: ", req.cookies);
+        if (!token) {
+            return res.send({ ok: false, accessToken: '' });
+        }
+        let payload = null;
+        try {
+            payload = (0, jsonwebtoken_1.verify)(token, process.env.REFRESH_TOKEN_SECRET);
+        }
+        catch (err) {
+            console.log(err);
+            return res.send({ ok: false, accessToken: '' });
+        }
+        const user = yield User_1.User.findOne({ id: payload.userId });
+        if (!user) {
+            return res.send({ ok: false, accessToken: '' });
+        }
+        if (user.tokenVersion !== payload.tokenVersion) {
+            console.log("revoked tokened");
+            return res.send({ ok: false, accessToken: '' });
+        }
+        (0, sendRefreshToken_1.sendRefreshToken)(res, (0, auth_1.createRefreshToken)(user));
+        return res.send({ ok: true, accessToken: (0, auth_1.createAccessToken)(user) });
+    }));
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: yield (0, type_graphql_1.buildSchema)({
             resolvers: [user_1.UserResolver, page_1.PageResolver],

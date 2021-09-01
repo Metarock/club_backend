@@ -26,8 +26,8 @@ export class Page extends BaseEntity {
     @Column({ nullable: true })
     pageimgUrl!: string;
 
-    @Column("int", { default: 0 })
-    tokenVersion: number;
+    // @Column("int", { default: 0 })
+    // tokenVersion: number;
 
     @Field()
     @Column()

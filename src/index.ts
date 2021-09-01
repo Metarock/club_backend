@@ -17,6 +17,9 @@ import { Post } from "./entities/Post";
 // import { PostResolver } from "./resolvers/post";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { verify } from "jsonwebtoken";
+import { createRefreshToken, createAccessToken } from "./services/auth";
+import { sendRefreshToken } from "./services/sendRefreshToken";
 
 
 const main = async () => {
@@ -43,6 +46,42 @@ const main = async () => {
     }))
 
     app.use(cookieParser());
+    //refreshes our cookie
+    app.post("/refresh_token", async (req, res) => {
+        //validate the token is correct
+        const token = req.cookies.jid
+        console.log("headers: ", req.cookies);
+
+        if (!token) {
+            return res.send({ ok: false, accessToken: '' });
+        }
+
+        let payload: any = null;
+        try {
+            payload = verify(token, process.env.REFRESH_TOKEN_SECRET!);
+        } catch (err) {
+            console.log(err);
+            return res.send({ ok: false, accessToken: '' });
+        }
+
+        //token is valid and send back an access token
+        const user = await User.findOne({ id: payload.userId });
+
+        if (!user) {
+            return res.send({ ok: false, accessToken: '' });
+        }
+
+        if (user.tokenVersion !== payload.tokenVersion) {
+            console.log("revoked tokened");
+            return res.send({ ok: false, accessToken: '' });
+        }
+
+        //refresh the refresh token
+        sendRefreshToken(res, createRefreshToken(user));
+
+        return res.send({ ok: true, accessToken: createAccessToken(user) });
+
+    })
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({

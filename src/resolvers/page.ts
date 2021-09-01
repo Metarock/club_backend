@@ -57,40 +57,27 @@ export class PageResolver {
     @UseMiddleware(isAuth) //authentication for posting first
     async createPage(
         @Arg('input') input: PageInput,
-        @Ctx() context: MyContext
+        @Ctx() { userPayLoad }: MyContext
     ): Promise<PageResponse | null> {
-        const authorization = context.req.headers['authorization'];
-        let user = '';
-        if (!authorization) {
-            return null
+
+        console.log("user id in create post: ", userPayLoad);
+        const clubOwner = await Page.findOne({ where: { creatorId: userPayLoad?.userId } });
+
+        if (clubOwner) {
+            return {
+                errors: [{
+                    field: 'Create page',
+                    message: 'Can only post once'
+                }]
+            } // already posted
         }
-
-        try {
-            const token = authorization.split(' ')[1];
-            const payload: any = verify(token, process.env.ACCESS_TOKEN_SECRET!);
-            user = payload.userId
-            const clubOwner = await Page.findOne({ where: { creatorId: payload.userId } });
-
-            if (clubOwner) {
-                return {
-                    errors: [{
-                        field: 'Create page',
-                        message: 'Can only post once'
-                    }]
-                } // already posted
-            }
-            const page = await Page.create({
-                ...input,
-                creatorId: user//get session id
-            }).save();
+        const page = await Page.create({
+            ...input,
+            creatorId: userPayLoad?.userId//get session id
+        }).save();
 
 
-            return { page }
-
-        } catch (err) {
-            console.log(err);
-            return null;
-        }
+        return { page }
 
         //club owners can only post one page
 
