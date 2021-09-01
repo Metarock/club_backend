@@ -7,9 +7,15 @@ import { validateRegister } from "../utils/validateRegister";
 import { getConnection } from "typeorm";
 import { COOKIE_NAME } from "../shared/constants";
 import { FieldError } from "../shared/FieldError";
+import { verify } from "jsonwebtoken";
+import { sendRefreshToken } from "../services/sendRefreshToken";
+import { createAccessToken } from "src/services/auth";
 
 @ObjectType()
 class UserResponse {
+    @Field(() => String, { nullable: true })
+    accessToken: string
+
     @Field(() => [FieldError], { nullable: true })
     errors?: FieldError[];
 
@@ -42,11 +48,20 @@ export class UserResolver {
     }
 
     @Query(() => User, { nullable: true })
-    async me(@Ctx() { req }: MyContext) {
-        if (!req.session.userId) {
-            return null; //if not found
+    async me(@Ctx() context: MyContext) {
+        const authorization = context.req.headers['authorization'];
+        if (!authorization) {
+            return null
         }
-        return User.findOne(req.session.userId);
+        try {
+            const token = authorization.split(' ')[1];
+            const payload: any = verify(token, process.env.ACCESS_TOKEN_SECRET!);
+
+            return User.findOne(payload.userId)
+        } catch (err) {
+            console.log(err);
+            return null
+        }
     }
 
     //login
@@ -54,7 +69,7 @@ export class UserResolver {
     async login(
         @Arg('usernameOrEmail') usernameOrEmail: string,
         @Arg("password") password: string,
-        @Ctx() { req }: MyContext
+        @Ctx() { res }: MyContext
     ): Promise<UserResponse> { //promise to return variable name user
         //verify if username or email exists
         const user = await User.findOne(usernameOrEmail.includes('@') ? { where: { email: usernameOrEmail } } : { where: { clubUsername: usernameOrEmail } });
@@ -62,6 +77,7 @@ export class UserResolver {
         //if user is not found
         if (!user) {
             return {
+                accessToken: '',
                 errors: [{
                     field: 'usernameorEmail',
                     message: 'username does not exist'
@@ -74,6 +90,7 @@ export class UserResolver {
 
         if (!valid) {
             return {
+                accessToken: '',
                 errors: [{
                     field: 'password',
                     message: 'inputted the wrong password'
@@ -81,23 +98,29 @@ export class UserResolver {
             }
         }
 
-        req.session.userId = user.id;
+        sendRefreshToken(res, createAccessToken(user));
 
-        console.log("user id (logged in): ", req.session.userId);
+        console.log("user id (logged in): ", user.id);
 
-        return { user };
+        return {
+            accessToken: createAccessToken(user),
+            user
+        };
     }
 
     //registration
     @Mutation(() => UserResponse)
     async register(
         @Arg('options') options: UsernamePasswordInput,
-        @Ctx() { req }: MyContext
+        @Ctx() { res }: MyContext
     ): Promise<UserResponse> {
         const errors = validateRegister(options);
 
         if (errors) {
-            return { errors };
+            return {
+                accessToken: '',
+                errors
+            };
         }
 
         const hashedPassword = await argon2.hash(options.password);
@@ -126,6 +149,7 @@ export class UserResolver {
 
             if (err.code === "23505") {
                 return {
+                    accessToken: '',
                     errors: [{
                         field: 'clubUsername',
                         message: 'club username already exists and taken'
@@ -137,10 +161,12 @@ export class UserResolver {
         console.log('club user name: ', user);
         console.log('club id', user.id);
 
-        req.session.userId = user.id; //set session
+        sendRefreshToken(res, createAccessToken(user));
 
-        console
-        return { user };
+        return {
+            accessToken: createAccessToken(user),
+            user
+        };
     }
 
     //log out
@@ -148,16 +174,8 @@ export class UserResolver {
     logout(
         @Ctx() { req, res }: MyContext
     ) {
-        return new Promise((resolve) => req.session.destroy(err => {
-            if (err) {
-                console.log("error in logging out: ", err);
-                resolve(false)
-                return
-            }
-            console.log("logged out successfully");
-            resolve(true);
-            res.clearCookie(COOKIE_NAME);
-        }))
+        sendRefreshToken(res, "");
+        return true;
     }
 
 }

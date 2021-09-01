@@ -3,7 +3,8 @@ import { Redis } from "ioredis";
 
 
 export type MyContext = {
-    req: Request & { session: Express.Session & { userId?: number, pageId: number } };
+    req: Request;
     res: Response;
-    redis: Redis;
+    userPayLoad: string;
+    postPayLoad: string;
 }

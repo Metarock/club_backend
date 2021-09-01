@@ -17,11 +17,7 @@ require("dotenv-safe/config");
 const express_1 = __importDefault(require("express"));
 const typeorm_1 = require("typeorm");
 const path_1 = __importDefault(require("path"));
-const ioredis_1 = __importDefault(require("ioredis"));
 const User_1 = require("./entities/User");
-const connect_redis_1 = __importDefault(require("connect-redis"));
-const express_session_1 = __importDefault(require("express-session"));
-const constants_1 = require("./shared/constants");
 const apollo_server_express_1 = require("apollo-server-express");
 const type_graphql_1 = require("type-graphql");
 const user_1 = require("./resolvers/user");
@@ -41,47 +37,17 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     });
     conn.runMigrations();
     const app = (0, express_1.default)();
-    const RedisStore = (0, connect_redis_1.default)(express_session_1.default);
-    const redis = new ioredis_1.default({
-        host: constants_1.REDIS_HOSTNAME,
-        port: constants_1.REDIS_PORT,
-        password: constants_1.REDIS_PASSWORD,
-        tls: { servername: constants_1.REDIS_HOSTNAME }
-    });
-    redis.on('connect', function () {
-        console.log('Connected to Redis');
-    });
-    redis.on('error', function (err) {
-        console.log('Redis error: ' + err);
-    });
     app.set("trust proxy", 1);
     app.use((0, cors_1.default)({
         origin: process.env.CORS_ORIGIN,
         credentials: true,
-    }));
-    app.use((0, express_session_1.default)({
-        name: constants_1.COOKIE_NAME,
-        store: new RedisStore({
-            client: redis,
-            disableTouch: true
-        }),
-        cookie: {
-            path: "/",
-            maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
-            httpOnly: true,
-            sameSite: 'lax',
-            secure: constants_1._prod_,
-        },
-        saveUninitialized: false,
-        secret: process.env.SESSION_SECRET,
-        resave: false
     }));
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: yield (0, type_graphql_1.buildSchema)({
             resolvers: [user_1.UserResolver, page_1.PageResolver, post_1.PostResolver],
             validate: false
         }),
-        context: ({ req, res }) => ({ req, res, redis })
+        context: ({ req, res }) => ({ req, res })
     });
     apolloServer.applyMiddleware({ app, cors: false });
     app.listen(parseInt(process.env.PORT), () => {

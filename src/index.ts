@@ -34,54 +34,19 @@ const main = async () => {
 
     const app = express()
 
-    const RedisStore = connectRedis(session)
-    const redis = new Redis({
-        host: REDIS_HOSTNAME,
-        port: REDIS_PORT,
-        password: REDIS_PASSWORD,
-        tls: { servername: REDIS_HOSTNAME }
-    })
-
-    redis.on('connect', function () {
-        console.log('Connected to Redis');
-    });
-
-    redis.on('error', function (err) {
-        console.log('Redis error: ' + err);
-    });
-
     app.set("trust proxy", 1);
 
     app.use(cors({
         origin: process.env.CORS_ORIGIN,
         credentials: true,
     }))
-    app.use(
-        session({
-            name: COOKIE_NAME,
-            store: new RedisStore({
-                client: redis,
-                disableTouch: true
-            }),
-            cookie: {
-                path: "/",
-                maxAge: 1000 * 60 * 60 * 24 * 365 * 10, //cookie durations
-                httpOnly: true,
-                sameSite: 'lax',
-                secure: _prod_,
-            },
-            saveUninitialized: false,
-            secret: process.env.SESSION_SECRET,
-            resave: false
-        }))
-
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
             resolvers: [UserResolver, PageResolver, PostResolver],
             validate: false
         }),
-        context: ({ req, res }) => ({ req, res, redis })
+        context: ({ req, res }) => ({ req, res })
     })
 
     apolloServer.applyMiddleware({ app, cors: false })

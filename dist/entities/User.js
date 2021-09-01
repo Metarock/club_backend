@@ -40,6 +40,10 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "clubName", void 0);
 __decorate([
+    (0, typeorm_1.Column)("int", { default: 0 }),
+    __metadata("design:type", Number)
+], User.prototype, "tokenVersion", void 0);
+__decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);

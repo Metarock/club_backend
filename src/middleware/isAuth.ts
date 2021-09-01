@@ -1,11 +1,22 @@
 import { MyContext } from "../types";
 import { MiddlewareFn } from "type-graphql";
+import { verify } from "jsonwebtoken";
 
 export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
+    const authorization = context.req.headers['authorization']
 
-    //check if university user club is logged in
-    if (!context.req.session.userId) {
-        throw new Error("not authenticated, please log in");
+    if (!authorization) {
+        throw new Error("not autheticated");
     }
+
+    try {
+        const token = authorization.split(' ')[1];
+        const payload = verify(token, process.env.ACCESS_TOKEN_SECRET!);
+        context.userPayLoad = payload as any;
+    } catch (err) {
+        console.log(err);
+        throw new Error("not autheticated");
+    }
+
     return next();
 }
