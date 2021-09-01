@@ -66,6 +66,12 @@ let UserResolver = class UserResolver {
     hello() {
         return "hi there";
     }
+    azureupdated() {
+        return "azure is updated";
+    }
+    doubleChecking() {
+        return "double checking it works";
+    }
     users() {
         return __awaiter(this, void 0, void 0, function* () {
             return User_1.User.find();
@@ -73,10 +79,10 @@ let UserResolver = class UserResolver {
     }
     me({ req }) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (req.session.userId) {
-                return User_1.User.findOne(req.session.userId);
+            if (!req.session.userId) {
+                return null;
             }
-            return undefined;
+            return User_1.User.findOne(req.session.userId);
         });
     }
     login(usernameOrEmail, password, { req }) {
@@ -166,6 +172,18 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], UserResolver.prototype, "hello", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UserResolver.prototype, "azureupdated", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => String),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UserResolver.prototype, "doubleChecking", null);
 __decorate([
     (0, type_graphql_1.Query)(() => [User_1.User]),
     __metadata("design:type", Function),
