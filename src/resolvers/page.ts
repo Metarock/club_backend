@@ -3,6 +3,7 @@ import { Arg, Ctx, Field, InputType, Int, Mutation, ObjectType, Query, Resolver,
 import { MyContext } from "../types";
 import { isAuth } from "../middleware/isAuth";
 import { FieldError } from "../shared/FieldError";
+import { verify } from "jsonwebtoken";
 
 //TODO 
 // RENAME TO CREATE PAGE
@@ -56,39 +57,61 @@ export class PageResolver {
     @UseMiddleware(isAuth) //authentication for posting first
     async createPage(
         @Arg('input') input: PageInput,
-        @Ctx() { req }: MyContext
-    ): Promise<PageResponse> {
-
-        //club owners can only post one page
-        const clubOwner = await Page.findOne({ where: { creatorId: req.session.userId } });
-
-        if (clubOwner) {
-            return {
-                errors: [{
-                    field: 'Create page',
-                    message: 'Can only post once'
-                }]
-            } // already posted
+        @Ctx() context: MyContext
+    ): Promise<PageResponse | null> {
+        const authorization = context.req.headers['authorization'];
+        let user = '';
+        if (!authorization) {
+            return null
         }
 
-        const page = await Page.create({
-            ...input,
-            creatorId: req.session.userId //get session id
-        }).save();
+        try {
+            const token = authorization.split(' ')[1];
+            const payload: any = verify(token, process.env.ACCESS_TOKEN_SECRET!);
+            user = payload.userId
+            const clubOwner = await Page.findOne({ where: { creatorId: payload.userId } });
 
-        req.session.pageId = page.id; //saves page id
+            if (clubOwner) {
+                return {
+                    errors: [{
+                        field: 'Create page',
+                        message: 'Can only post once'
+                    }]
+                } // already posted
+            }
+            const page = await Page.create({
+                ...input,
+                creatorId: user//get session id
+            }).save();
 
-        return { page }
+
+            return { page }
+
+        } catch (err) {
+            console.log(err);
+            return null;
+        }
+
+        //club owners can only post one page
+
     }
 
     //delete Page
     @Mutation(() => Boolean)
     @UseMiddleware(isAuth)
     async deletePage(
-        @Arg('id', () => Int) id: number,
-        @Ctx() { req }: MyContext
+        @Arg('id', () => String) id: string,
+        @Ctx() context: MyContext
     ): Promise<Boolean> {
-        await Page.delete({ id, creatorId: req.session.userId }) // only deeltes Page by the user
+        const authorization = context.req.headers['authorization'];
+        let user = '';
+        if (!authorization) {
+            return false;
+        }
+        const token = authorization.split(' ')[1];
+        const payload: any = verify(token, process.env.ACCESS_TOKEN_SECRET!);
+
+        await Page.delete({ id, creatorId: payload.userId }) // only deeltes Page by the user
         return true;
     }
 

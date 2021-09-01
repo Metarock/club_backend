@@ -17,7 +17,7 @@ let User = class User extends typeorm_1.BaseEntity {
 __decorate([
     (0, type_graphql_1.Field)(),
     (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], User.prototype, "id", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),

@@ -9,7 +9,7 @@ import { COOKIE_NAME } from "../shared/constants";
 import { FieldError } from "../shared/FieldError";
 import { verify } from "jsonwebtoken";
 import { sendRefreshToken } from "../services/sendRefreshToken";
-import { createAccessToken } from "src/services/auth";
+import { createAccessToken } from "../services/auth";
 
 @ObjectType()
 class UserResponse {

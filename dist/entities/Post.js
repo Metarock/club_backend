@@ -17,7 +17,7 @@ let Post = class Post extends typeorm_1.BaseEntity {
 __decorate([
     (0, type_graphql_1.Field)(),
     (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], Post.prototype, "id", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
@@ -32,7 +32,7 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Field)(),
     (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], Post.prototype, "postCreatorId", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => String),

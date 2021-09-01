@@ -47,10 +47,16 @@ const type_graphql_1 = require("type-graphql");
 const UsernamePasswordInput_1 = require("../shared/UsernamePasswordInput");
 const validateRegister_1 = require("../utils/validateRegister");
 const typeorm_1 = require("typeorm");
-const constants_1 = require("../shared/constants");
 const FieldError_1 = require("../shared/FieldError");
+const jsonwebtoken_1 = require("jsonwebtoken");
+const sendRefreshToken_1 = require("../services/sendRefreshToken");
+const auth_1 = require("../services/auth");
 let UserResponse = class UserResponse {
 };
+__decorate([
+    (0, type_graphql_1.Field)(() => String, { nullable: true }),
+    __metadata("design:type", String)
+], UserResponse.prototype, "accessToken", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => [FieldError_1.FieldError], { nullable: true }),
     __metadata("design:type", Array)
@@ -77,19 +83,29 @@ let UserResolver = class UserResolver {
             return User_1.User.find();
         });
     }
-    me({ req }) {
+    me(context) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!req.session.userId) {
+            const authorization = context.req.headers['authorization'];
+            if (!authorization) {
                 return null;
             }
-            return User_1.User.findOne(req.session.userId);
+            try {
+                const token = authorization.split(' ')[1];
+                const payload = (0, jsonwebtoken_1.verify)(token, process.env.ACCESS_TOKEN_SECRET);
+                return User_1.User.findOne(payload.userId);
+            }
+            catch (err) {
+                console.log(err);
+                return null;
+            }
         });
     }
-    login(usernameOrEmail, password, { req }) {
+    login(usernameOrEmail, password, { res }) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.User.findOne(usernameOrEmail.includes('@') ? { where: { email: usernameOrEmail } } : { where: { clubUsername: usernameOrEmail } });
             if (!user) {
                 return {
+                    accessToken: '',
                     errors: [{
                             field: 'usernameorEmail',
                             message: 'username does not exist'
@@ -99,22 +115,29 @@ let UserResolver = class UserResolver {
             const valid = yield argon2.verify(user.password, password);
             if (!valid) {
                 return {
+                    accessToken: '',
                     errors: [{
                             field: 'password',
                             message: 'inputted the wrong password'
                         }]
                 };
             }
-            req.session.userId = user.id;
-            console.log("user id (logged in): ", req.session.userId);
-            return { user };
+            (0, sendRefreshToken_1.sendRefreshToken)(res, (0, auth_1.createAccessToken)(user));
+            console.log("user id (logged in): ", user.id);
+            return {
+                accessToken: (0, auth_1.createAccessToken)(user),
+                user
+            };
         });
     }
-    register(options, { req }) {
+    register(options, { res }) {
         return __awaiter(this, void 0, void 0, function* () {
             const errors = (0, validateRegister_1.validateRegister)(options);
             if (errors) {
-                return { errors };
+                return {
+                    accessToken: '',
+                    errors
+                };
             }
             const hashedPassword = yield argon2.hash(options.password);
             let user;
@@ -139,6 +162,7 @@ let UserResolver = class UserResolver {
                 console.log("error for register: ", err);
                 if (err.code === "23505") {
                     return {
+                        accessToken: '',
                         errors: [{
                                 field: 'clubUsername',
                                 message: 'club username already exists and taken'
@@ -148,22 +172,16 @@ let UserResolver = class UserResolver {
             }
             console.log('club user name: ', user);
             console.log('club id', user.id);
-            req.session.userId = user.id;
-            console;
-            return { user };
+            (0, sendRefreshToken_1.sendRefreshToken)(res, (0, auth_1.createAccessToken)(user));
+            return {
+                accessToken: (0, auth_1.createAccessToken)(user),
+                user
+            };
         });
     }
     logout({ req, res }) {
-        return new Promise((resolve) => req.session.destroy(err => {
-            if (err) {
-                console.log("error in logging out: ", err);
-                resolve(false);
-                return;
-            }
-            console.log("logged out successfully");
-            resolve(true);
-            res.clearCookie(constants_1.COOKIE_NAME);
-        }));
+        (0, sendRefreshToken_1.sendRefreshToken)(res, "");
+        return true;
     }
 };
 __decorate([

@@ -8,7 +8,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, U
 export class Page extends BaseEntity {
     @Field()
     @PrimaryGeneratedColumn()
-    id!: number; //string is also supported
+    id!: string; //string is also supported
 
     @Field()
     @Column({ type: 'text' })
@@ -26,9 +26,12 @@ export class Page extends BaseEntity {
     @Column({ nullable: true })
     pageimgUrl!: string;
 
+    @Column("int", { default: 0 })
+    tokenVersion: number;
+
     @Field()
     @Column()
-    creatorId: number; //which club id posted it
+    creatorId: string; //which club id posted it
 
     @Field(() => String)
     @CreateDateColumn()

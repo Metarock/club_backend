@@ -14,8 +14,9 @@ import { UserResolver } from "./resolvers/user";
 import { Page } from "./entities/Page";
 import { PageResolver } from "./resolvers/page";
 import { Post } from "./entities/Post";
-import { PostResolver } from "./resolvers/post";
+// import { PostResolver } from "./resolvers/post";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 
 const main = async () => {
@@ -25,7 +26,7 @@ const main = async () => {
         logging: true,
         synchronize: true,
         migrations: [path.join(__dirname, './migrations/*')],
-        entities: [User, Page, Post]
+        entities: [User, Page]
     })
 
     conn.runMigrations();
@@ -41,9 +42,11 @@ const main = async () => {
         credentials: true,
     }))
 
+    app.use(cookieParser());
+
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [UserResolver, PageResolver, PostResolver],
+            resolvers: [UserResolver, PageResolver],
             validate: false
         }),
         context: ({ req, res }) => ({ req, res })

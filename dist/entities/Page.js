@@ -17,7 +17,7 @@ let Page = class Page extends typeorm_1.BaseEntity {
 __decorate([
     (0, type_graphql_1.Field)(),
     (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], Page.prototype, "id", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
@@ -40,9 +40,13 @@ __decorate([
     __metadata("design:type", String)
 ], Page.prototype, "pageimgUrl", void 0);
 __decorate([
+    (0, typeorm_1.Column)("int", { default: 0 }),
+    __metadata("design:type", Number)
+], Page.prototype, "tokenVersion", void 0);
+__decorate([
     (0, type_graphql_1.Field)(),
     (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], Page.prototype, "creatorId", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => String),

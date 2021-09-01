@@ -7,7 +7,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, U
 export class User extends BaseEntity {
     @Field()
     @PrimaryGeneratedColumn()
-    id!: number;
+    id!: string;
 
     @Field()
     @Column({ unique: true })

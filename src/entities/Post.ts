@@ -8,7 +8,7 @@ export class Post extends BaseEntity {
 
     @Field()
     @PrimaryGeneratedColumn()
-    id!: number; //string is also supported
+    id!: string; //string is also supported
 
     @Field()
     @Column()
@@ -20,7 +20,7 @@ export class Post extends BaseEntity {
 
     @Field()
     @Column()
-    postCreatorId: number;
+    postCreatorId: string;
 
     @Field(() => String)
     @CreateDateColumn()

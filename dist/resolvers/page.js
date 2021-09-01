@@ -26,6 +26,7 @@ const Page_1 = require("../entities/Page");
 const type_graphql_1 = require("type-graphql");
 const isAuth_1 = require("../middleware/isAuth");
 const FieldError_1 = require("../shared/FieldError");
+const jsonwebtoken_1 = require("jsonwebtoken");
 let PageInput = class PageInput {
 };
 __decorate([
@@ -82,25 +83,45 @@ let PageResolver = class PageResolver {
     page(id) {
         return Page_1.Page.findOne(id);
     }
-    createPage(input, { req }) {
+    createPage(input, context) {
         return __awaiter(this, void 0, void 0, function* () {
-            const clubOwner = yield Page_1.Page.findOne({ where: { creatorId: req.session.userId } });
-            if (clubOwner) {
-                return {
-                    errors: [{
-                            field: 'Create page',
-                            message: 'Can only post once'
-                        }]
-                };
+            const authorization = context.req.headers['authorization'];
+            let user = '';
+            if (!authorization) {
+                return null;
             }
-            const page = yield Page_1.Page.create(Object.assign(Object.assign({}, input), { creatorId: req.session.userId })).save();
-            req.session.pageId = page.id;
-            return { page };
+            try {
+                const token = authorization.split(' ')[1];
+                const payload = (0, jsonwebtoken_1.verify)(token, process.env.ACCESS_TOKEN_SECRET);
+                user = payload.userId;
+                const clubOwner = yield Page_1.Page.findOne({ where: { creatorId: payload.userId } });
+                if (clubOwner) {
+                    return {
+                        errors: [{
+                                field: 'Create page',
+                                message: 'Can only post once'
+                            }]
+                    };
+                }
+                const page = yield Page_1.Page.create(Object.assign(Object.assign({}, input), { creatorId: user })).save();
+                return { page };
+            }
+            catch (err) {
+                console.log(err);
+                return null;
+            }
         });
     }
-    deletePage(id, { req }) {
+    deletePage(id, context) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield Page_1.Page.delete({ id, creatorId: req.session.userId });
+            const authorization = context.req.headers['authorization'];
+            let user = '';
+            if (!authorization) {
+                return false;
+            }
+            const token = authorization.split(' ')[1];
+            const payload = (0, jsonwebtoken_1.verify)(token, process.env.ACCESS_TOKEN_SECRET);
+            yield Page_1.Page.delete({ id, creatorId: payload.userId });
             return true;
         });
     }
@@ -130,10 +151,10 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Mutation)(() => Boolean),
     (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
-    __param(0, (0, type_graphql_1.Arg)('id', () => type_graphql_1.Int)),
+    __param(0, (0, type_graphql_1.Arg)('id', () => String)),
     __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], PageResolver.prototype, "deletePage", null);
 PageResolver = __decorate([
