@@ -29,6 +29,7 @@ const main = async () => {
     })
 
     conn.runMigrations();
+    // await Page.delete({});
 
     // await User.delete({ })
 
