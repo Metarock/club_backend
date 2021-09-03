@@ -82,20 +82,26 @@ let PageResolver = class PageResolver {
     page(id) {
         return Page_1.Page.findOne(id);
     }
-    createPage(input, { req }) {
+    createPage({ req }, pageTitle, pageText, aboutUs, pageimgUrl) {
         return __awaiter(this, void 0, void 0, function* () {
             const clubOwner = yield Page_1.Page.findOne({ where: { creatorId: req.session.userId } });
-            if (clubOwner) {
-                return {
-                    errors: [{
-                            field: 'Create page',
-                            message: 'Can only post once'
-                        }]
-                };
-            }
-            const page = yield Page_1.Page.create(Object.assign(Object.assign({}, input), { creatorId: req.session.userId })).save();
-            req.session.pageId = page.id;
-            return { page };
+            if (clubOwner)
+                throw new Error("Can only post once");
+            pageTitle = pageTitle.trim();
+            pageText = pageText.trim();
+            aboutUs = aboutUs.trim();
+            if (!aboutUs || !pageText || !pageTitle)
+                throw new Error("Input cannot be empty, please fill it");
+            if (pageimgUrl)
+                pageimgUrl = pageimgUrl.trim();
+            req.session.pageId = req.session.userId;
+            return Page_1.Page.create({
+                pageTitle,
+                pageText,
+                aboutUs,
+                pageimgUrl,
+                creatorId: req.session.userId
+            }).save();
         });
     }
     deletePage(id, { req }) {
@@ -119,12 +125,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PageResolver.prototype, "page", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => PageResponse),
+    (0, type_graphql_1.Mutation)(() => Page_1.Page),
     (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
-    __param(0, (0, type_graphql_1.Arg)('input')),
-    __param(1, (0, type_graphql_1.Ctx)()),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)('pageTitle', () => String)),
+    __param(2, (0, type_graphql_1.Arg)('pageText', () => String)),
+    __param(3, (0, type_graphql_1.Arg)('aboutUs', () => String)),
+    __param(4, (0, type_graphql_1.Arg)('pageimgUrl', () => String, { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [PageInput, Object]),
+    __metadata("design:paramtypes", [Object, String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], PageResolver.prototype, "createPage", null);
 __decorate([

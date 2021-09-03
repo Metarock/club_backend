@@ -1,5 +1,5 @@
 import { Page } from "../entities/Page";
-import { Arg, Ctx, Field, InputType, Int, Mutation, ObjectType, Query, Resolver, UseMiddleware } from "type-graphql";
+import { Arg, ArgsType, Ctx, Field, InputType, Int, Mutation, ObjectType, Query, Resolver, UseMiddleware } from "type-graphql";
 import { MyContext } from "../types";
 import { isAuth } from "../middleware/isAuth";
 import { FieldError } from "../shared/FieldError";
@@ -52,33 +52,34 @@ export class PageResolver {
     }
 
     //create post
-    @Mutation(() => PageResponse)
+    @Mutation(() => Page)
     @UseMiddleware(isAuth) //authentication for posting first
     async createPage(
-        @Arg('input') input: PageInput,
-        @Ctx() { req }: MyContext
-    ): Promise<PageResponse> {
+        @Ctx() { req }: MyContext,
+        @Arg('pageTitle', () => String) pageTitle: string,
+        @Arg('pageText', () => String) pageText: string,
+        @Arg('aboutUs', () => String) aboutUs: string,
+        @Arg('pageimgUrl', () => String, { nullable: true }) pageimgUrl?: string,
+    ): Promise<Page> {
 
         //club owners can only post one page
         const clubOwner = await Page.findOne({ where: { creatorId: req.session.userId } });
 
-        if (clubOwner) {
-            return {
-                errors: [{
-                    field: 'Create page',
-                    message: 'Can only post once'
-                }]
-            } // already posted
-        }
+        if (clubOwner) throw new Error("Can only post once");
+        pageTitle = pageTitle.trim();
+        pageText = pageText.trim();
+        aboutUs = aboutUs.trim();
+        if (!aboutUs || !pageText || !pageTitle) throw new Error("Input cannot be empty, please fill it");
+        if (pageimgUrl) pageimgUrl = pageimgUrl.trim();
 
-        const page = await Page.create({
-            ...input,
+        req.session.pageId = req.session.userId; //saves page id
+        return Page.create({
+            pageTitle,
+            pageText,
+            aboutUs,
+            pageimgUrl,
             creatorId: req.session.userId //get session id
         }).save();
-
-        req.session.pageId = page.id; //saves page id
-
-        return { page }
     }
 
     //delete Page
