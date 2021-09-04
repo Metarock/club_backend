@@ -80,7 +80,7 @@ let PageResolver = class PageResolver {
         });
     }
     page(id) {
-        return Page_1.Page.findOne(id);
+        return Page_1.Page.findOne(id, { relations: ['creator'] });
     }
     createPage({ req }, pageTitle, pageText, aboutUs, pageimgUrl) {
         return __awaiter(this, void 0, void 0, function* () {

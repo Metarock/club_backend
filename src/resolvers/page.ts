@@ -48,7 +48,7 @@ export class PageResolver {
     //find a post
     @Query(() => Page, { nullable: true })
     page(@Arg('id', () => Int) id: number): Promise<Page | undefined> {
-        return Page.findOne(id);
+        return Page.findOne(id, { relations: ['creator'] });
     }
 
     //create post
