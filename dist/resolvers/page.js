@@ -76,7 +76,7 @@ PageResponse = __decorate([
 let PageResolver = class PageResolver {
     pages() {
         return __awaiter(this, void 0, void 0, function* () {
-            return Page_1.Page.find();
+            return Page_1.Page.find({ relations: ['creator'] });
         });
     }
     page(id) {

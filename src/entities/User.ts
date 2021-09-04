@@ -1,6 +1,7 @@
 import { cp } from "fs";
 import { Field, ObjectType } from "type-graphql";
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Page } from "./Page";
 
 @ObjectType()
 @Entity()
@@ -24,6 +25,9 @@ export class User extends BaseEntity {
     @Field()
     @Column({ type: 'text' })
     clubName: string;
+
+    @OneToOne(() => Page, page => page.creator)
+    page: Page;
 
     @Column()
     password!: string;

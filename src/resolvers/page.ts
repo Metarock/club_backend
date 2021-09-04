@@ -42,7 +42,7 @@ export class PageResolver {
     @Query(() => [Page])
     //return an array of post
     async pages(): Promise<Page[]> {
-        return Page.find();
+        return Page.find({ relations: ['creator'] });
     }
 
     //find a post

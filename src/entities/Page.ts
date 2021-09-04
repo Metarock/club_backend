@@ -1,5 +1,6 @@
 import { Field, ObjectType } from "type-graphql";
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { User } from "./User";
 
 
 //decorators
@@ -29,6 +30,11 @@ export class Page extends BaseEntity {
     @Field()
     @Column()
     creatorId: number; //which club id posted it
+
+    @Field(() => User)
+    @OneToOne(() => User, creator => creator.page)
+    @JoinColumn()
+    creator: User;
 
     @Field(() => String)
     @CreateDateColumn()
