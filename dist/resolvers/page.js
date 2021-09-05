@@ -26,6 +26,7 @@ const Page_1 = require("../entities/Page");
 const type_graphql_1 = require("type-graphql");
 const isAuth_1 = require("../middleware/isAuth");
 const FieldError_1 = require("../shared/FieldError");
+const typeorm_1 = require("typeorm");
 let PageInput = class PageInput {
 };
 __decorate([
@@ -80,7 +81,7 @@ let PageResolver = class PageResolver {
         });
     }
     page(id) {
-        return Page_1.Page.findOne(id);
+        return Page_1.Page.findOne(id, { relations: ['creator'] });
     }
     createPage({ req }, pageTitle, pageText, aboutUs, pageimgUrl) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -102,6 +103,21 @@ let PageResolver = class PageResolver {
                 pageimgUrl,
                 creatorId: req.session.userId
             }).save();
+        });
+    }
+    editPage(id, pageTitle, pageText, aboutUs, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield (0, typeorm_1.getConnection)()
+                .createQueryBuilder()
+                .update(Page_1.Page)
+                .set({ pageTitle, pageText, aboutUs })
+                .where('id = :id and "creatorId" = :creatorId', {
+                id,
+                creatorId: req.session.userId
+            })
+                .returning("*")
+                .execute();
+            return result.raw[0];
         });
     }
     deletePage(id, { req }) {
@@ -136,6 +152,18 @@ __decorate([
     __metadata("design:paramtypes", [Object, String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], PageResolver.prototype, "createPage", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Page_1.Page, { nullable: true }),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    __param(0, (0, type_graphql_1.Arg)('id', () => type_graphql_1.Int)),
+    __param(1, (0, type_graphql_1.Arg)('pageTitle')),
+    __param(2, (0, type_graphql_1.Arg)('pageText')),
+    __param(3, (0, type_graphql_1.Arg)('aboutUs')),
+    __param(4, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String, String, Object]),
+    __metadata("design:returntype", Promise)
+], PageResolver.prototype, "editPage", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => Boolean),
     (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),

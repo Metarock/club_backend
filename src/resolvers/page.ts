@@ -3,6 +3,7 @@ import { Arg, ArgsType, Ctx, Field, InputType, Int, Mutation, ObjectType, Query,
 import { MyContext } from "../types";
 import { isAuth } from "../middleware/isAuth";
 import { FieldError } from "../shared/FieldError";
+import { getConnection } from "typeorm";
 
 //TODO 
 // RENAME TO CREATE PAGE
@@ -48,7 +49,7 @@ export class PageResolver {
     //find a post
     @Query(() => Page, { nullable: true })
     page(@Arg('id', () => Int) id: number): Promise<Page | undefined> {
-        return Page.findOne(id);
+        return Page.findOne(id, { relations: ['creator'] });
     }
 
     //create post
@@ -80,6 +81,30 @@ export class PageResolver {
             pageimgUrl,
             creatorId: req.session.userId //get session id
         }).save();
+    }
+
+    //updatePage
+    @Mutation(() => Page, { nullable: true })
+    @UseMiddleware(isAuth)
+    async editPage(
+        @Arg('id', () => Int) id: number,
+        @Arg('pageTitle') pageTitle: string,
+        @Arg('pageText') pageText: string,
+        @Arg('aboutUs') aboutUs: string,
+        @Ctx() { req }: MyContext
+    ): Promise<Page | null> {
+        const result = await getConnection()
+            .createQueryBuilder()
+            .update(Page)
+            .set({ pageTitle, pageText, aboutUs })
+            .where('id = :id and "creatorId" = :creatorId', {
+                id,
+                creatorId: req.session.userId
+            })
+            .returning("*")
+            .execute();
+        //id is the condition, and pageTitle is the one that will be change
+        return result.raw[0] as any;
     }
 
     //delete Page
