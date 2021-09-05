@@ -30,6 +30,7 @@ const page_1 = require("./resolvers/page");
 const Post_1 = require("./entities/Post");
 const post_1 = require("./resolvers/post");
 const cors_1 = __importDefault(require("cors"));
+const userLoader_1 = require("./utils/userLoader");
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const conn = yield (0, typeorm_1.createConnection)({
         type: 'postgres',
@@ -80,7 +81,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             resolvers: [user_1.UserResolver, page_1.PageResolver, post_1.PostResolver],
             validate: false
         }),
-        context: ({ req, res }) => ({ req, res, redis })
+        context: ({ req, res }) => ({ req, res, redis, userLoader: (0, userLoader_1.userLoader)(), })
     });
     apolloServer.applyMiddleware({ app, cors: false });
     app.listen(parseInt(process.env.PORT), () => {

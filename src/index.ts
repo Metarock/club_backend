@@ -16,6 +16,7 @@ import { PageResolver } from "./resolvers/page";
 import { Post } from "./entities/Post";
 import { PostResolver } from "./resolvers/post";
 import cors from "cors";
+import { userLoader } from "./utils/userLoader";
 
 
 const main = async () => {
@@ -82,7 +83,7 @@ const main = async () => {
             resolvers: [UserResolver, PageResolver, PostResolver],
             validate: false
         }),
-        context: ({ req, res }) => ({ req, res, redis })
+        context: ({ req, res }) => ({ req, res, redis, userLoader: userLoader(), })
     })
 
     apolloServer.applyMiddleware({ app, cors: false })
