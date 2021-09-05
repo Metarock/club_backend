@@ -69,7 +69,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
             httpOnly: true,
             sameSite: 'lax',
-            domain: constants_1._prod_ ? ".clubwithenv.azurewebsites.net" : undefined,
+            domain: constants_1._prod_ ? ".clubwithenv.azurewebsites.net." : undefined,
         },
         saveUninitialized: false,
         secret: process.env.SESSION_SECRET,
