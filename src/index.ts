@@ -69,7 +69,7 @@ const main = async () => {
             cookie: {
                 maxAge: 1000 * 60 * 60, //cookie durations
                 httpOnly: true,
-                sameSite: 'none',
+                sameSite: 'lax',
                 secure: _prod_,
                 domain: _prod_ ? "clubwithenv.azurewebsites.net" : undefined,
 
@@ -85,7 +85,7 @@ const main = async () => {
             resolvers: [UserResolver, PageResolver, PostResolver],
             validate: false
         }),
-        context: ({ req, res }) => ({ req, res, redis, userLoader: userLoader(), })
+        context: ({ req, res }) => ({ req, res, redis, userLoader: userLoader(), }),
     })
 
     await apolloServer.start();

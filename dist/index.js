@@ -69,7 +69,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         cookie: {
             maxAge: 1000 * 60 * 60,
             httpOnly: true,
-            sameSite: 'none',
+            sameSite: 'lax',
             secure: constants_1._prod_,
             domain: constants_1._prod_ ? "clubwithenv.azurewebsites.net" : undefined,
         },
@@ -82,7 +82,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             resolvers: [user_1.UserResolver, page_1.PageResolver, post_1.PostResolver],
             validate: false
         }),
-        context: ({ req, res }) => ({ req, res, redis, userLoader: (0, userLoader_1.userLoader)(), })
+        context: ({ req, res }) => ({ req, res, redis, userLoader: (0, userLoader_1.userLoader)(), }),
     });
     yield apolloServer.start();
     apolloServer.applyMiddleware({ app, cors: false });
