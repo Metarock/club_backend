@@ -58,6 +58,7 @@ const main = async () => {
         origin: process.env.CORS_ORIGIN,
         credentials: true,
     }))
+
     app.use(
         session({
             name: COOKIE_NAME,
@@ -70,7 +71,7 @@ const main = async () => {
                 httpOnly: true,
                 sameSite: 'lax',
                 secure: _prod_,
-                domain: _prod_ ? ".clubwithenv.azurewebsites.net." : undefined,
+                domain: _prod_ ? "clubwithenv.azurewebsites.net" : undefined,
             },
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
@@ -86,7 +87,10 @@ const main = async () => {
         context: ({ req, res }) => ({ req, res, redis, userLoader: userLoader(), })
     })
 
+    await apolloServer.start();
+
     apolloServer.applyMiddleware({ app, cors: false })
+
 
 
     app.listen(parseInt(process.env.PORT), () => {
