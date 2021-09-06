@@ -71,7 +71,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             httpOnly: true,
             sameSite: 'lax',
             secure: constants_1._prod_,
-            domain: constants_1._prod_ ? "clubwithenv.azurewebsites.net" : undefined,
+            domain: constants_1._prod_ ? ".azurewebsites.net" : undefined,
         },
         saveUninitialized: false,
         secret: process.env.SESSION_SECRET,
