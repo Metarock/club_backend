@@ -27,6 +27,7 @@ const type_graphql_1 = require("type-graphql");
 const isAuth_1 = require("../middleware/isAuth");
 const FieldError_1 = require("../shared/FieldError");
 const typeorm_1 = require("typeorm");
+const User_1 = require("../entities/User");
 let PageInput = class PageInput {
 };
 __decorate([
@@ -79,6 +80,9 @@ let PageResolver = class PageResolver {
         return __awaiter(this, void 0, void 0, function* () {
             return Page_1.Page.find({ relations: ['creator'] });
         });
+    }
+    creator(page, { userLoader }) {
+        return userLoader.load(page.creatorId);
     }
     page(id) {
         return Page_1.Page.findOne(id, { relations: ['creator'] });
@@ -133,6 +137,14 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PageResolver.prototype, "pages", null);
+__decorate([
+    (0, type_graphql_1.FieldResolver)(() => User_1.User),
+    __param(0, (0, type_graphql_1.Root)()),
+    __param(1, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Page_1.Page, Object]),
+    __metadata("design:returntype", void 0)
+], PageResolver.prototype, "creator", null);
 __decorate([
     (0, type_graphql_1.Query)(() => Page_1.Page, { nullable: true }),
     __param(0, (0, type_graphql_1.Arg)('id', () => type_graphql_1.Int)),

@@ -1,9 +1,10 @@
 import { Page } from "../entities/Page";
-import { Arg, ArgsType, Ctx, Field, InputType, Int, Mutation, ObjectType, Query, Resolver, UseMiddleware } from "type-graphql";
+import { Arg, ArgsType, Ctx, Field, FieldResolver, InputType, Int, Mutation, ObjectType, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import { MyContext } from "../types";
 import { isAuth } from "../middleware/isAuth";
 import { FieldError } from "../shared/FieldError";
 import { getConnection } from "typeorm";
+import { User } from "../entities/User";
 
 //TODO 
 // RENAME TO CREATE PAGE
@@ -44,6 +45,11 @@ export class PageResolver {
     //return an array of post
     async pages(): Promise<Page[]> {
         return Page.find({ relations: ['creator'] });
+    }
+
+    @FieldResolver(() => User)
+    creator(@Root() page: Page, @Ctx() { userLoader }: MyContext) {
+        return userLoader.load(page.creatorId);
     }
 
     //find a post
