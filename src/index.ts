@@ -67,11 +67,12 @@ const main = async () => {
                 disableTouch: true
             }),
             cookie: {
-                maxAge: 1000 * 60 * 60 * 24 * 365 * 10, //cookie durations
+                maxAge: 1000 * 60 * 60, //cookie durations
                 httpOnly: true,
-                sameSite: 'lax',
+                sameSite: 'none',
                 secure: _prod_,
                 domain: _prod_ ? "clubwithenv.azurewebsites.net" : undefined,
+
             },
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,

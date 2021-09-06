@@ -67,9 +67,9 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             disableTouch: true
         }),
         cookie: {
-            maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
+            maxAge: 1000 * 60 * 60,
             httpOnly: true,
-            sameSite: 'lax',
+            sameSite: 'none',
             secure: constants_1._prod_,
             domain: constants_1._prod_ ? "clubwithenv.azurewebsites.net" : undefined,
         },
