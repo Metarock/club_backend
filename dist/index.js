@@ -60,6 +60,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         origin: process.env.CORS_ORIGIN,
         credentials: true,
     }));
+    console.log(constants_1._prod_);
     app.use((0, express_session_1.default)({
         name: constants_1.COOKIE_NAME,
         store: new RedisStore({
@@ -70,7 +71,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             maxAge: 1000 * 60 * 60,
             httpOnly: true,
             sameSite: 'lax',
-            secure: constants_1._prod_,
+            secure: true,
             domain: constants_1._prod_ ? ".azurewebsites.net" : undefined,
         },
         saveUninitialized: false,

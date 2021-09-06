@@ -59,6 +59,8 @@ const main = async () => {
         credentials: true,
     }))
 
+    console.log(_prod_);
+
     app.use(
         session({
             name: COOKIE_NAME,
@@ -70,7 +72,7 @@ const main = async () => {
                 maxAge: 1000 * 60 * 60, //cookie durations
                 httpOnly: true,
                 sameSite: 'lax',
-                secure: _prod_,
+                secure: true,
                 domain: _prod_ ? ".azurewebsites.net" : undefined,
 
             },
