@@ -40,5 +40,5 @@ jobs:
     - name: 'Run Azure webapp deploy action using publish profile credentials'
       uses: azure/webapps-deploy@v2
       with:
-        app-name: clubWithEnv
+        app-name: theClub-backend
         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_EA63B172C3F94F628FEE310404E9BFD0 }}
