@@ -73,8 +73,7 @@ const main = async () => {
                 httpOnly: true,
                 sameSite: "lax",
                 secure: _prod_,
-                domain: 'azurewebsites.net',
-
+                // domain: 'azurewebsites.net',
             },
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
