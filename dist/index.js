@@ -70,9 +70,8 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         cookie: {
             maxAge: 1000 * 60 * 60,
             httpOnly: true,
-            sameSite: 'lax',
             secure: true,
-            domain: 'clubwithenv.azurewebsites.net' || 'theclub.azurewebsites.net',
+            domain: 'clubwithenv.azurewebsites.net',
         },
         saveUninitialized: false,
         secret: process.env.SESSION_SECRET,
