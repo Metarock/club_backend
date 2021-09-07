@@ -71,8 +71,9 @@ const main = async () => {
             cookie: {
                 maxAge: 1000 * 60 * 60, //cookie durations
                 httpOnly: true,
+                sameSite: "lax",
                 secure: _prod_,
-                domain: 'clubwithenv.azurewebsites.net',
+                domain: 'azurewebsites.net',
 
             },
             saveUninitialized: false,
