@@ -148,7 +148,7 @@ export class UserResolver {
     logout(
         @Ctx() { req, res }: MyContext
     ) {
-        return new Promise((resolve) => req.session.destroy(err => {
+        return new Promise((resolve) => req.session.destroy((err: any) => {
             if (err) {
                 console.log("error in logging out: ", err);
                 resolve(false)

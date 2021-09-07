@@ -154,7 +154,7 @@ let UserResolver = class UserResolver {
         });
     }
     logout({ req, res }) {
-        return new Promise((resolve) => req.session.destroy(err => {
+        return new Promise((resolve) => req.session.destroy((err) => {
             if (err) {
                 console.log("error in logging out: ", err);
                 resolve(false);

@@ -19,7 +19,7 @@
   "devDependencies": {
     "@types/connect-redis": "^0.0.17",
     "@types/cors": "^2.8.12",
-    "@types/express-session": "^1.17.4",
+    "@types/express-session": "^1.17.0",
     "@types/node": "^16.7.13",
     "@types/nodemailer": "^6.4.4",
     "@types/redis": "^2.8.32",
