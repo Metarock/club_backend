@@ -71,7 +71,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             maxAge: 1000 * 60 * 60,
             httpOnly: true,
             sameSite: "lax",
-            secure: false,
+            secure: true,
             domain: 'theclub-backend.azurewebsites.net',
         },
         saveUninitialized: false,
