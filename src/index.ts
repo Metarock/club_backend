@@ -87,6 +87,8 @@ const main = async () => {
             validate: false
         }),
         context: ({ req, res }) => ({ req, res, redis, userLoader: userLoader(), }),
+        playground: true,
+        introspection: true,
     })
 
     await apolloServer.start();
