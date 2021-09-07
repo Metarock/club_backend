@@ -71,7 +71,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             maxAge: 1000 * 60 * 60,
             httpOnly: true,
             secure: process.env.NODE_ENV === "production" ? true : false,
-            domain: process.env.NODE_ENV === "production" ? 'theclub-backend.azurewebsites.net' : undefined,
+            domain: process.env.NODE_ENV === "production" ? '.azurewebsites.net' : undefined,
         },
         saveUninitialized: false,
         secret: process.env.SESSION_SECRET,
