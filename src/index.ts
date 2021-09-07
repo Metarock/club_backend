@@ -73,7 +73,7 @@ const main = async () => {
                 httpOnly: true,
                 sameSite: "lax",
                 secure: true,
-                domain: 'theclub-backend.azurewebsites.net',
+                domain: process.env.NODE_ENV ? 'theclub-backend.azurewebsites.net' : "",
 
             },
             saveUninitialized: false,
