@@ -72,7 +72,7 @@ const main = async () => {
                 maxAge: 1000 * 60 * 60, //cookie durations
                 httpOnly: true,
                 secure: true,
-                domain: 'clubwithenv.azurewebsites.net',
+                domain: 'theclub-backend.azurewebsites.net',
 
             },
             saveUninitialized: false,

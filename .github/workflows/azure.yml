@@ -41,4 +41,4 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: clubWithEnv
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_ECBC47D0C3DD4418B15215456EFFFF4E }}
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_EA63B172C3F94F628FEE310404E9BFD0 }}
