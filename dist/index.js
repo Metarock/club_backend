@@ -72,6 +72,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             httpOnly: true,
             sameSite: 'lax',
             secure: true,
+            domain: 'clubwithenv.azurewebsites.net' || 'theclub.azurewebsites.net',
         },
         saveUninitialized: false,
         secret: process.env.SESSION_SECRET,

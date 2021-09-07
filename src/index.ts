@@ -73,7 +73,7 @@ const main = async () => {
                 httpOnly: true,
                 sameSite: 'lax',
                 secure: true,
-                // domain: "azurewebsites.net",
+                domain: 'clubwithenv.azurewebsites.net' || 'theclub.azurewebsites.net',
 
             },
             saveUninitialized: false,
