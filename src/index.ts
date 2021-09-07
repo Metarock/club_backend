@@ -73,7 +73,7 @@ const main = async () => {
                 httpOnly: true,
                 sameSite: 'lax',
                 secure: true,
-                // domain: _prod_ ? ".azurewebsites.net" : undefined,
+                domain: ".azurewebsites.net",
 
             },
             saveUninitialized: false,
