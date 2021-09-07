@@ -72,8 +72,8 @@ const main = async () => {
                 maxAge: 1000 * 60 * 60, //cookie durations
                 httpOnly: true,
                 sameSite: "lax",
-                secure: _prod_,
-                // domain: 'azurewebsites.net',
+                secure: true,
+                domain: '.azurewebsites.net',
             },
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
