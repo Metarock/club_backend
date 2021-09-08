@@ -72,7 +72,7 @@ const main = async () => {
                 maxAge: 1000 * 60 * 60, //cookie durations
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production" ? true : false,
-                domain: process.env.NODE_ENV === "production" ? '.azurewebsites.net' : undefined,
+                domain: process.env.NODE_ENV === "production" ? 'azurewebsites.net' : undefined,
 
             },
             saveUninitialized: false,
