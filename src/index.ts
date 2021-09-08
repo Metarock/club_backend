@@ -71,8 +71,9 @@ const main = async () => {
             cookie: {
                 maxAge: 1000 * 60 * 60, //cookie durations
                 httpOnly: true,
+                sameSite: "lax",
                 secure: process.env.NODE_ENV === "production" ? true : false,
-                domain: process.env.NODE_ENV === "production" ? 'azurewebsites.net' : undefined,
+                domain: process.env.NODE_ENV === "production" ? 'theclub-backend.azurewebsites.net' : undefined,
 
             },
             saveUninitialized: false,
