@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Post = void 0;
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
+const Page_1 = require("./Page");
 let Post = class Post extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -39,6 +40,11 @@ __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], Post.prototype, "createdAt", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(() => Page_1.Page),
+    (0, typeorm_1.ManyToOne)(() => Page_1.Page, (page) => page.posts),
+    __metadata("design:type", Page_1.Page)
+], Post.prototype, "postCreator", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => String),
     (0, typeorm_1.UpdateDateColumn)(),
