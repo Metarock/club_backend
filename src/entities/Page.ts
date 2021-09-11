@@ -28,7 +28,7 @@ export class Page extends BaseEntity {
     @Column({ nullable: true })
     pageimgUrl!: string;
 
-    @OneToMany(() => Post, posts => posts.postCreator)
+    @OneToMany(() => Post, post => post.postCreator)
     posts: Post[];
 
     @Field()

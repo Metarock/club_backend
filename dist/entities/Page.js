@@ -42,7 +42,7 @@ __decorate([
     __metadata("design:type", String)
 ], Page.prototype, "pageimgUrl", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => Post_1.Post, posts => posts.postCreator),
+    (0, typeorm_1.OneToMany)(() => Post_1.Post, post => post.postCreator),
     __metadata("design:type", Array)
 ], Page.prototype, "posts", void 0);
 __decorate([

@@ -99,7 +99,6 @@ let PageResolver = class PageResolver {
                 throw new Error("Input cannot be empty, please fill it");
             if (pageimgUrl)
                 pageimgUrl = pageimgUrl.trim();
-            req.session.pageId = req.session.userId;
             return Page_1.Page.create({
                 pageTitle,
                 pageText,

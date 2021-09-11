@@ -25,7 +25,9 @@ exports.PostResolver = void 0;
 const Post_1 = require("../entities/Post");
 const type_graphql_1 = require("type-graphql");
 const FieldError_1 = require("../shared/FieldError");
-const isPostAuth_1 = require("../middleware/isPostAuth");
+const isAuth_1 = require("../middleware/isAuth");
+const Page_1 = require("../entities/Page");
+const typeorm_1 = require("typeorm");
 let PostInput = class PostInput {
 };
 __decorate([
@@ -56,14 +58,40 @@ let PostResolver = class PostResolver {
     post(id) {
         return Post_1.Post.findOne(id);
     }
+    posts() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return Post_1.Post.find({ relations: ['postCreator'] });
+        });
+    }
+    postCreator(post, { postLoader }) {
+        return postLoader.load(post.postCreatorId);
+    }
     createPost(input, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
-            return Post_1.Post.create(Object.assign(Object.assign({}, input), { postCreatorId: req.session.pageId })).save();
+            const clubOwner = yield Page_1.Page.findOne({ where: { creatorId: req.session.userId } });
+            if (!clubOwner)
+                throw new Error('not the owner of this page');
+            return Post_1.Post.create(Object.assign(Object.assign({}, input), { postCreatorId: req.session.userId })).save();
+        });
+    }
+    updatePost(id, title, text, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield (0, typeorm_1.getConnection)()
+                .createQueryBuilder()
+                .update(Post_1.Post)
+                .set({ title, text })
+                .where('id = :id and "postCreatorId" = :postCreatorId', {
+                id,
+                postCreatorId: req.session.userId
+            })
+                .returning("*")
+                .execute();
+            return result.raw[0];
         });
     }
     deletePost(id, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield Post_1.Post.delete({ id, postCreatorId: req.session.pageId });
+            yield Post_1.Post.delete({ id, postCreatorId: req.session.userId });
             return true;
         });
     }
@@ -76,8 +104,22 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "post", null);
 __decorate([
+    (0, type_graphql_1.Query)(() => [Post_1.Post]),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PostResolver.prototype, "posts", null);
+__decorate([
+    (0, type_graphql_1.FieldResolver)(() => Page_1.Page),
+    __param(0, (0, type_graphql_1.Root)()),
+    __param(1, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Post_1.Post, Object]),
+    __metadata("design:returntype", void 0)
+], PostResolver.prototype, "postCreator", null);
+__decorate([
     (0, type_graphql_1.Mutation)(() => Post_1.Post),
-    (0, type_graphql_1.UseMiddleware)(isPostAuth_1.isPostAuth),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
     __param(0, (0, type_graphql_1.Arg)('input')),
     __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
@@ -85,8 +127,19 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "createPost", null);
 __decorate([
+    (0, type_graphql_1.Mutation)(() => Post_1.Post, { nullable: true }),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    __param(0, (0, type_graphql_1.Arg)('id', () => type_graphql_1.Int)),
+    __param(1, (0, type_graphql_1.Arg)('title')),
+    __param(2, (0, type_graphql_1.Arg)('text')),
+    __param(3, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String, Object]),
+    __metadata("design:returntype", Promise)
+], PostResolver.prototype, "updatePost", null);
+__decorate([
     (0, type_graphql_1.Mutation)(() => Boolean),
-    (0, type_graphql_1.UseMiddleware)(isPostAuth_1.isPostAuth),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
     __param(0, (0, type_graphql_1.Arg)('id', () => type_graphql_1.Int)),
     __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),

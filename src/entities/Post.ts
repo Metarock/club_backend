@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "type-graphql";
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Page } from "./Page";
 
 
@@ -23,15 +23,16 @@ export class Post extends BaseEntity {
     @Column()
     postCreatorId: number;
 
-    @Field(() => String)
-    @CreateDateColumn()
-    createdAt!: Date;
-
-    @Field(() => Page)
-    @ManyToOne(() => Page, (page) => page.posts)
+    @ManyToOne(() => Page, (page) => page.posts, { cascade: true })
+    @JoinColumn()
     postCreator: Page;
 
     @Field(() => String)
+    @CreateDateColumn()
+    createdAt: Date;
+
+
+    @Field(() => String)
     @UpdateDateColumn()
-    updatedAt!: Date;
+    updatedAt: Date;
 }

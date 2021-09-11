@@ -31,6 +31,7 @@ const Post_1 = require("./entities/Post");
 const post_1 = require("./resolvers/post");
 const cors_1 = __importDefault(require("cors"));
 const userLoader_1 = require("./utils/userLoader");
+const createPostLoader_1 = require("./utils/createPostLoader");
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const conn = yield (0, typeorm_1.createConnection)({
         type: 'postgres',
@@ -83,11 +84,10 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             resolvers: [user_1.UserResolver, page_1.PageResolver, post_1.PostResolver],
             validate: false
         }),
-        context: ({ req, res }) => ({ req, res, redis, userLoader: (0, userLoader_1.userLoader)(), }),
+        context: ({ req, res }) => ({ req, res, redis, userLoader: (0, userLoader_1.userLoader)(), postLoader: (0, createPostLoader_1.createPostLoader)() }),
         playground: true,
         introspection: true,
     });
-    yield apolloServer.start();
     apolloServer.applyMiddleware({ app, cors: false });
     app.listen(parseInt(process.env.PORT), () => {
         console.log("server working");

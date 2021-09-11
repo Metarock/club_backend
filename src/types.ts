@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Redis } from "ioredis";
+import { createPostLoader } from "./utils/createPostLoader";
 import { userLoader } from "./utils/userLoader";
 
 
@@ -8,4 +9,5 @@ export type MyContext = {
     res: Response;
     redis: Redis;
     userLoader: ReturnType<typeof userLoader>;
+    postLoader: ReturnType<typeof createPostLoader>
 }

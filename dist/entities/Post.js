@@ -36,15 +36,15 @@ __decorate([
     __metadata("design:type", Number)
 ], Post.prototype, "postCreatorId", void 0);
 __decorate([
+    (0, typeorm_1.ManyToOne)(() => Page_1.Page, (page) => page.posts, { cascade: true }),
+    (0, typeorm_1.JoinColumn)(),
+    __metadata("design:type", Page_1.Page)
+], Post.prototype, "postCreator", void 0);
+__decorate([
     (0, type_graphql_1.Field)(() => String),
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], Post.prototype, "createdAt", void 0);
-__decorate([
-    (0, type_graphql_1.Field)(() => Page_1.Page),
-    (0, typeorm_1.ManyToOne)(() => Page_1.Page, (page) => page.posts),
-    __metadata("design:type", Page_1.Page)
-], Post.prototype, "postCreator", void 0);
 __decorate([
     (0, type_graphql_1.Field)(() => String),
     (0, typeorm_1.UpdateDateColumn)(),

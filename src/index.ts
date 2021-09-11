@@ -17,6 +17,7 @@ import { Post } from "./entities/Post";
 import { PostResolver } from "./resolvers/post";
 import cors from "cors";
 import { userLoader } from "./utils/userLoader";
+import { createPostLoader } from "./utils/createPostLoader";
 
 
 const main = async () => {
@@ -87,12 +88,10 @@ const main = async () => {
             resolvers: [UserResolver, PageResolver, PostResolver],
             validate: false
         }),
-        context: ({ req, res }) => ({ req, res, redis, userLoader: userLoader(), }),
+        context: ({ req, res }) => ({ req, res, redis, userLoader: userLoader(), postLoader: createPostLoader() }),
         playground: true,
         introspection: true,
     })
-
-    await apolloServer.start();
 
     apolloServer.applyMiddleware({ app, cors: false })
 

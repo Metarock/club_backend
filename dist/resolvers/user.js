@@ -106,7 +106,9 @@ let UserResolver = class UserResolver {
                 };
             }
             req.session.userId = user.id;
+            req.session.pageId = req.session.userId;
             console.log("user id (logged in): ", req.session.userId);
+            console.log("page id", req.session.pageId);
             return { user };
         });
     }
