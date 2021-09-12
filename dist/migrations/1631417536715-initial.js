@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateTable1631327935029 = void 0;
-class updateTable1631327935029 {
+exports.initial1631417536715 = void 0;
+class initial1631417536715 {
     up(_queryRunner) {
         return __awaiter(this, void 0, void 0, function* () {
         });
@@ -20,5 +20,5 @@ class updateTable1631327935029 {
         });
     }
 }
-exports.updateTable1631327935029 = updateTable1631327935029;
-//# sourceMappingURL=1631327935029-updateTable.js.map
+exports.initial1631417536715 = initial1631417536715;
+//# sourceMappingURL=1631417536715-initial.js.map

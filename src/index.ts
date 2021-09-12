@@ -30,6 +30,8 @@ const main = async () => {
         entities: [User, Page, Post]
     })
 
+    // const conn = await createConnection();
+
     conn.runMigrations();
     // await Page.delete({});
 
