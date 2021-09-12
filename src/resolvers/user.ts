@@ -5,7 +5,6 @@ import { UsernamePasswordInput } from "../shared/UsernamePasswordInput";
 import { MyContext } from "../types";
 import { validateRegister } from "../utils/validateRegister";
 import { getConnection } from "typeorm";
-import { COOKIE_NAME } from "../shared/constants";
 import { FieldError } from "../shared/FieldError";
 
 @ObjectType()
@@ -157,7 +156,7 @@ export class UserResolver {
             }
             console.log("logged out successfully");
             resolve(true);
-            res.clearCookie(COOKIE_NAME);
+            res.clearCookie(process.env.COOKIE_NAME);
         }))
     }
 
