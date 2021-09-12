@@ -1,23 +1,22 @@
-import "reflect-metadata";
-import "dotenv-safe/config"
-import express from "express";
-import { createConnection } from "typeorm";
-import path from "path";
-import Redis from 'ioredis';
-import { User } from "./entities/User";
-import connectRedis from "connect-redis";
-import session from "express-session";
-import { REDIS_HOSTNAME, REDIS_PORT, REDIS_PASSWORD, COOKIE_NAME, _prod_ } from "./shared/constants";
 import { ApolloServer } from "apollo-server-express";
-import { buildSchema } from "type-graphql";
-import { UserResolver } from "./resolvers/user";
-import { Page } from "./entities/Page";
-import { PageResolver } from "./resolvers/page";
-import { Post } from "./entities/Post";
-import { PostResolver } from "./resolvers/post";
+import connectRedis from "connect-redis";
 import cors from "cors";
-import { userLoader } from "./utils/userLoader";
+import "dotenv-safe/config";
+import express from "express";
+import session from "express-session";
+import Redis from 'ioredis';
+import path from "path";
+import "reflect-metadata";
+import { buildSchema } from "type-graphql";
+import { createConnection } from "typeorm";
+import { Page } from "./entities/Page";
+import { Post } from "./entities/Post";
+import { User } from "./entities/User";
+import { PageResolver } from "./resolvers/page";
+import { PostResolver } from "./resolvers/post";
+import { UserResolver } from "./resolvers/user";
 import { createPostLoader } from "./utils/createPostLoader";
+import { userLoader } from "./utils/userLoader";
 
 
 const main = async () => {
@@ -41,10 +40,10 @@ const main = async () => {
 
     const RedisStore = connectRedis(session)
     const redis = new Redis({
-        host: REDIS_HOSTNAME,
-        port: REDIS_PORT,
-        password: REDIS_PASSWORD,
-        tls: { servername: REDIS_HOSTNAME }
+        host: process.env.REDIS_HOSTNAME,
+        port: parseInt(process.env.REDIS_PORT),
+        password: process.env.REDIS_PASSWORD,
+        tls: { servername: process.env.REDIS_HOSTNAME }
     })
 
     redis.on('connect', function () {
@@ -62,11 +61,9 @@ const main = async () => {
         credentials: true,
     }))
 
-    console.log(_prod_);
-
     app.use(
         session({
-            name: COOKIE_NAME,
+            name: process.env.COOKIE_NAME,
             store: new RedisStore({
                 client: redis,
                 disableTouch: true
