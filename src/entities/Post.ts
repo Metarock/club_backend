@@ -23,6 +23,10 @@ export class Post extends BaseEntity {
     @Column()
     postCreatorId: number;
 
+    @Field(() => String, { nullable: true })
+    @Column({ nullable: true })
+    postimgUrl!: string;
+
     @ManyToOne(() => Page, (page) => page.posts, { cascade: true })
     @JoinColumn()
     postCreator: Page;

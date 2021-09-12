@@ -24,7 +24,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostResolver = void 0;
 const Post_1 = require("../entities/Post");
 const type_graphql_1 = require("type-graphql");
-const FieldError_1 = require("../shared/FieldError");
 const isAuth_1 = require("../middleware/isAuth");
 const Page_1 = require("../entities/Page");
 const typeorm_1 = require("typeorm");
@@ -41,20 +40,23 @@ __decorate([
 PostInput = __decorate([
     (0, type_graphql_1.InputType)()
 ], PostInput);
-let PostResponse = class PostResponse {
+let PaginatedPosts = class PaginatedPosts {
 };
 __decorate([
-    (0, type_graphql_1.Field)(() => [FieldError_1.FieldError], { nullable: true }),
+    (0, type_graphql_1.Field)(() => [Post_1.Post]),
     __metadata("design:type", Array)
-], PostResponse.prototype, "errors", void 0);
+], PaginatedPosts.prototype, "posts", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(() => Post_1.Post, { nullable: true }),
-    __metadata("design:type", Post_1.Post)
-], PostResponse.prototype, "post", void 0);
-PostResponse = __decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Boolean)
+], PaginatedPosts.prototype, "hasMore", void 0);
+PaginatedPosts = __decorate([
     (0, type_graphql_1.ObjectType)()
-], PostResponse);
+], PaginatedPosts);
 let PostResolver = class PostResolver {
+    textSnippet(root) {
+        return root.text.slice(0, 50);
+    }
     post(id) {
         return Post_1.Post.findOne(id);
     }
@@ -66,12 +68,12 @@ let PostResolver = class PostResolver {
     postCreator(post, { postLoader }) {
         return postLoader.load(post.postCreatorId);
     }
-    createPost(input, { req }) {
+    createPost({ req }, input, postimgUrl) {
         return __awaiter(this, void 0, void 0, function* () {
             const clubOwner = yield Page_1.Page.findOne({ where: { creatorId: req.session.userId } });
             if (!clubOwner)
                 throw new Error('not the owner of this page');
-            return Post_1.Post.create(Object.assign(Object.assign({}, input), { postCreatorId: req.session.userId })).save();
+            return Post_1.Post.create(Object.assign(Object.assign({}, input), { postimgUrl: postimgUrl, postCreatorId: req.session.userId })).save();
         });
     }
     updatePost(id, title, text, { req }) {
@@ -97,6 +99,13 @@ let PostResolver = class PostResolver {
     }
 };
 __decorate([
+    (0, type_graphql_1.FieldResolver)(() => String),
+    __param(0, (0, type_graphql_1.Root)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Post_1.Post]),
+    __metadata("design:returntype", void 0)
+], PostResolver.prototype, "textSnippet", null);
+__decorate([
     (0, type_graphql_1.Query)(() => Post_1.Post, { nullable: true }),
     __param(0, (0, type_graphql_1.Arg)('id', () => type_graphql_1.Int)),
     __metadata("design:type", Function),
@@ -120,10 +129,11 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Mutation)(() => Post_1.Post),
     (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
-    __param(0, (0, type_graphql_1.Arg)('input')),
-    __param(1, (0, type_graphql_1.Ctx)()),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)('input')),
+    __param(2, (0, type_graphql_1.Arg)('postimgUrl', () => String, { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [PostInput, Object]),
+    __metadata("design:paramtypes", [Object, PostInput, String]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "createPost", null);
 __decorate([

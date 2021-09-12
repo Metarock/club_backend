@@ -17,17 +17,22 @@ class PostInput {
 }
 
 @ObjectType()
-class PostResponse {
-    @Field(() => [FieldError], { nullable: true })
-    errors?: FieldError[];
+class PaginatedPosts {
+    @Field(() => [Post])
+    posts: Post[]
 
-    @Field(() => Post, { nullable: true })
-    post?: Post
+    @Field()
+    hasMore: boolean
 }
 
 
 @Resolver(Post)
 export class PostResolver {
+
+    @FieldResolver(() => String)
+    textSnippet(@Root() root: Post) {
+        return root.text.slice(0, 50);
+    }
 
     @Query(() => Post, { nullable: true })
     post(@Arg('id', () => Int) id: number): Promise<Post | undefined> {
@@ -53,8 +58,9 @@ export class PostResolver {
     @Mutation(() => Post)
     @UseMiddleware(isAuth)
     async createPost(
+        @Ctx() { req }: MyContext,
         @Arg('input') input: PostInput,
-        @Ctx() { req }: MyContext
+        @Arg('postimgUrl', () => String, { nullable: true }) postimgUrl?: string,
     ): Promise<Post> {
         const clubOwner = await Page.findOne({ where: { creatorId: req.session.userId } });
 
@@ -62,6 +68,7 @@ export class PostResolver {
 
         return Post.create({
             ...input,
+            postimgUrl: postimgUrl,
             postCreatorId: req.session.userId
         }).save();
     }

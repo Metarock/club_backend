@@ -36,6 +36,11 @@ __decorate([
     __metadata("design:type", Number)
 ], Post.prototype, "postCreatorId", void 0);
 __decorate([
+    (0, type_graphql_1.Field)(() => String, { nullable: true }),
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Post.prototype, "postimgUrl", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => Page_1.Page, (page) => page.posts, { cascade: true }),
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", Page_1.Page)
