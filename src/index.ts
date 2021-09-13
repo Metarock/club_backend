@@ -22,7 +22,7 @@ import { userLoader } from "./utils/userLoader";
 const main = async () => {
     const conn = await createConnection({
         type: 'postgres',
-        url: 'postgres://dbezkkue:eiSkSsUQ1toLTXkkv4Rmav8OiJJjHN54@chunee.db.elephantsql.com/dbezkkue',
+        url: process.env.DATABASE_URL,
         logging: true,
         synchronize: true,
         migrations: [path.join(__dirname, './migrations/*')],
