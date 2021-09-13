@@ -12,24 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("reflect-metadata");
+const apollo_server_express_1 = require("apollo-server-express");
+const connect_redis_1 = __importDefault(require("connect-redis"));
+const cors_1 = __importDefault(require("cors"));
 require("dotenv-safe/config");
 const express_1 = __importDefault(require("express"));
-const typeorm_1 = require("typeorm");
-const path_1 = __importDefault(require("path"));
-const ioredis_1 = __importDefault(require("ioredis"));
-const User_1 = require("./entities/User");
-const connect_redis_1 = __importDefault(require("connect-redis"));
 const express_session_1 = __importDefault(require("express-session"));
-const constants_1 = require("./shared/constants");
-const apollo_server_express_1 = require("apollo-server-express");
+const ioredis_1 = __importDefault(require("ioredis"));
+const path_1 = __importDefault(require("path"));
+require("reflect-metadata");
 const type_graphql_1 = require("type-graphql");
-const user_1 = require("./resolvers/user");
+const typeorm_1 = require("typeorm");
 const Page_1 = require("./entities/Page");
-const page_1 = require("./resolvers/page");
 const Post_1 = require("./entities/Post");
+const User_1 = require("./entities/User");
+const page_1 = require("./resolvers/page");
 const post_1 = require("./resolvers/post");
-const cors_1 = __importDefault(require("cors"));
+const user_1 = require("./resolvers/user");
+const createPostLoader_1 = require("./utils/createPostLoader");
 const userLoader_1 = require("./utils/userLoader");
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const conn = yield (0, typeorm_1.createConnection)({
@@ -44,10 +44,10 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const app = (0, express_1.default)();
     const RedisStore = (0, connect_redis_1.default)(express_session_1.default);
     const redis = new ioredis_1.default({
-        host: constants_1.REDIS_HOSTNAME,
-        port: constants_1.REDIS_PORT,
-        password: constants_1.REDIS_PASSWORD,
-        tls: { servername: constants_1.REDIS_HOSTNAME }
+        host: process.env.REDIS_HOSTNAME,
+        port: parseInt(process.env.REDIS_PORT),
+        password: process.env.REDIS_PASSWORD,
+        tls: { servername: process.env.REDIS_HOSTNAME }
     });
     redis.on('connect', function () {
         console.log('Connected to Redis');
@@ -60,9 +60,8 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         origin: process.env.CORS_ORIGIN,
         credentials: true,
     }));
-    console.log(constants_1._prod_);
     app.use((0, express_session_1.default)({
-        name: constants_1.COOKIE_NAME,
+        name: process.env.COOKIE_NAME,
         store: new RedisStore({
             client: redis,
             disableTouch: true
@@ -83,11 +82,10 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             resolvers: [user_1.UserResolver, page_1.PageResolver, post_1.PostResolver],
             validate: false
         }),
-        context: ({ req, res }) => ({ req, res, redis, userLoader: (0, userLoader_1.userLoader)(), }),
+        context: ({ req, res }) => ({ req, res, redis, userLoader: (0, userLoader_1.userLoader)(), postLoader: (0, createPostLoader_1.createPostLoader)() }),
         playground: true,
         introspection: true,
     });
-    yield apolloServer.start();
     apolloServer.applyMiddleware({ app, cors: false });
     app.listen(parseInt(process.env.PORT), () => {
         console.log("server working");

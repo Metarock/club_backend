@@ -79,7 +79,6 @@ export class PageResolver {
         if (!aboutUs || !pageText || !pageTitle) throw new Error("Input cannot be empty, please fill it");
         if (pageimgUrl) pageimgUrl = pageimgUrl.trim();
 
-        req.session.pageId = req.session.userId; //saves page id
         return Page.create({
             pageTitle,
             pageText,

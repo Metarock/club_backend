@@ -1,5 +1,6 @@
 import { Field, ObjectType } from "type-graphql";
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Post } from "./Post";
 import { User } from "./User";
 
 
@@ -26,6 +27,9 @@ export class Page extends BaseEntity {
     @Field(() => String, { nullable: true })
     @Column({ nullable: true })
     pageimgUrl!: string;
+
+    @OneToMany(() => Post, post => post.postCreator)
+    posts: Post[];
 
     @Field()
     @Column()

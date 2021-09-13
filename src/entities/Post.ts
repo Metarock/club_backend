@@ -1,5 +1,6 @@
 import { Field, ObjectType } from "type-graphql";
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Page } from "./Page";
 
 
 @ObjectType()
@@ -22,11 +23,20 @@ export class Post extends BaseEntity {
     @Column()
     postCreatorId: number;
 
+    @Field(() => String, { nullable: true })
+    @Column({ nullable: true })
+    postimgUrl!: string;
+
+    @ManyToOne(() => Page, (page) => page.posts, { cascade: true })
+    @JoinColumn()
+    postCreator: Page;
+
     @Field(() => String)
     @CreateDateColumn()
-    createdAt!: Date;
+    createdAt: Date;
+
 
     @Field(() => String)
     @UpdateDateColumn()
-    updatedAt!: Date;
+    updatedAt: Date;
 }

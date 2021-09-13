@@ -3,6 +3,7 @@
     "host": "chunee.db.elephantsql.com",
     "username": "dbezkkue",
     "password": "eiSkSsUQ1toLTXkkv4Rmav8OiJJjHN54",
+    "logging": "true",
     "database": "dbezkkue",
     "entities": [
         "dist/entities/*.js"

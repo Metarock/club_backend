@@ -8,17 +8,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initial1630729219302 = void 0;
-class initial1630729219302 {
-    up(_queryRunner) {
-        return __awaiter(this, void 0, void 0, function* () {
-        });
-    }
-    down(_queryRunner) {
-        return __awaiter(this, void 0, void 0, function* () {
-        });
-    }
-}
-exports.initial1630729219302 = initial1630729219302;
-//# sourceMappingURL=1630729219302-initial.js.map
+exports.createPostLoader = void 0;
+const dataloader_1 = __importDefault(require("dataloader"));
+const Page_1 = require("../entities/Page");
+const createPostLoader = () => new dataloader_1.default((pageIds) => __awaiter(void 0, void 0, void 0, function* () {
+    const pageUsers = yield Page_1.Page.findByIds(pageIds);
+    const pageIdToPage = {};
+    pageUsers.forEach((u) => {
+        pageIdToPage[u.id] = u;
+    });
+    const pageUserSorted = pageIds.map((pageId) => pageIdToPage[pageId]);
+    return pageUserSorted;
+}));
+exports.createPostLoader = createPostLoader;
+//# sourceMappingURL=createPostLoader.js.map

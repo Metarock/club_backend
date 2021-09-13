@@ -5,7 +5,6 @@ import { UsernamePasswordInput } from "../shared/UsernamePasswordInput";
 import { MyContext } from "../types";
 import { validateRegister } from "../utils/validateRegister";
 import { getConnection } from "typeorm";
-import { COOKIE_NAME } from "../shared/constants";
 import { FieldError } from "../shared/FieldError";
 
 @ObjectType()
@@ -82,9 +81,10 @@ export class UserResolver {
         }
 
         req.session.userId = user.id;
+        req.session.pageId = req.session.userId;
 
         console.log("user id (logged in): ", req.session.userId);
-
+        console.log("page id", req.session.pageId)
         return { user };
     }
 
@@ -156,7 +156,7 @@ export class UserResolver {
             }
             console.log("logged out successfully");
             resolve(true);
-            res.clearCookie(COOKIE_NAME);
+            res.clearCookie(process.env.COOKIE_NAME);
         }))
     }
 

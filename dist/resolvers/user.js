@@ -47,7 +47,6 @@ const type_graphql_1 = require("type-graphql");
 const UsernamePasswordInput_1 = require("../shared/UsernamePasswordInput");
 const validateRegister_1 = require("../utils/validateRegister");
 const typeorm_1 = require("typeorm");
-const constants_1 = require("../shared/constants");
 const FieldError_1 = require("../shared/FieldError");
 let UserResponse = class UserResponse {
 };
@@ -106,7 +105,9 @@ let UserResolver = class UserResolver {
                 };
             }
             req.session.userId = user.id;
+            req.session.pageId = req.session.userId;
             console.log("user id (logged in): ", req.session.userId);
+            console.log("page id", req.session.pageId);
             return { user };
         });
     }
@@ -162,7 +163,7 @@ let UserResolver = class UserResolver {
             }
             console.log("logged out successfully");
             resolve(true);
-            res.clearCookie(constants_1.COOKIE_NAME);
+            res.clearCookie(process.env.COOKIE_NAME);
         }));
     }
 };
