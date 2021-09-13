@@ -1,5 +1,7 @@
 # THE CLUB BACKEND
 
+## [DEMO](https://theclub-backend.azurewebsites.net/graphql)
+
 ## Setup a postgresql database on your choosing
 
 Create a database 
