@@ -39,12 +39,6 @@ export class PostResolver {
         return Post.findOne(id);
     }
 
-    //find all post
-    @Query(() => [Post])
-    //return an array of post
-    async posts(): Promise<Post[]> {
-        return Post.find({ relations: ['postCreator'] });
-    }
 
     @FieldResolver(() => Page) // return page
     postCreator(
@@ -52,6 +46,40 @@ export class PostResolver {
         @Ctx() { postLoader }: MyContext
     ) {
         return postLoader.load(post.postCreatorId);
+    }
+
+    //find all post
+    @Query(() => PaginatedPosts)
+    //return an array of post
+    async posts(
+        //pagination
+        @Arg('limit', () => Int) limit: number,
+        @Arg('cursor', () => String, { nullable: true }) cursor: string | null,
+    ): Promise<PaginatedPosts> {
+        const realLimit = Math.min(20, limit);
+        const realLimitPlusOne = realLimit + 1;
+
+        const replacements: any[] = [realLimitPlusOne];
+
+        if (cursor) {
+            replacements.push(new Date(parseInt(cursor)));
+        }
+
+        const posts = await getConnection().query(
+            `
+                select p.*
+                from post p
+                ${cursor ? `where p."createdAt" < $2` : ""}
+                order by p."createdAt" DESC
+                limit $1
+            `,
+            replacements
+        );
+
+        return {
+            posts: posts.slice(0, realLimit),
+            hasMore: posts.length === realLimitPlusOne
+        }
     }
 
     //create post

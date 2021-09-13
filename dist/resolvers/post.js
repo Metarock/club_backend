@@ -60,13 +60,29 @@ let PostResolver = class PostResolver {
     post(id) {
         return Post_1.Post.findOne(id);
     }
-    posts() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return Post_1.Post.find({ relations: ['postCreator'] });
-        });
-    }
     postCreator(post, { postLoader }) {
         return postLoader.load(post.postCreatorId);
+    }
+    posts(limit, cursor) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const realLimit = Math.min(20, limit);
+            const realLimitPlusOne = realLimit + 1;
+            const replacements = [realLimitPlusOne];
+            if (cursor) {
+                replacements.push(new Date(parseInt(cursor)));
+            }
+            const posts = yield (0, typeorm_1.getConnection)().query(`
+                select p.*
+                from post p
+                ${cursor ? `where p."createdAt" < $2` : ""}
+                order by p."createdAt" DESC
+                limit $1
+            `, replacements);
+            return {
+                posts: posts.slice(0, realLimit),
+                hasMore: posts.length === realLimitPlusOne
+            };
+        });
     }
     createPost({ req }, input, postimgUrl) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -113,12 +129,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "post", null);
 __decorate([
-    (0, type_graphql_1.Query)(() => [Post_1.Post]),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], PostResolver.prototype, "posts", null);
-__decorate([
     (0, type_graphql_1.FieldResolver)(() => Page_1.Page),
     __param(0, (0, type_graphql_1.Root)()),
     __param(1, (0, type_graphql_1.Ctx)()),
@@ -126,6 +136,14 @@ __decorate([
     __metadata("design:paramtypes", [Post_1.Post, Object]),
     __metadata("design:returntype", void 0)
 ], PostResolver.prototype, "postCreator", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => PaginatedPosts),
+    __param(0, (0, type_graphql_1.Arg)('limit', () => type_graphql_1.Int)),
+    __param(1, (0, type_graphql_1.Arg)('cursor', () => String, { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], PostResolver.prototype, "posts", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => Post_1.Post),
     (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
