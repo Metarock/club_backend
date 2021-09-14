@@ -34,7 +34,7 @@ const userLoader_1 = require("./utils/userLoader");
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const conn = yield (0, typeorm_1.createConnection)({
         type: 'postgres',
-        url: 'postgres://dbezkkue:eiSkSsUQ1toLTXkkv4Rmav8OiJJjHN54@chunee.db.elephantsql.com/dbezkkue',
+        url: process.env.DATABASE_URL,
         logging: true,
         synchronize: true,
         migrations: [path_1.default.join(__dirname, './migrations/*')],
@@ -69,7 +69,6 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         cookie: {
             maxAge: 1000 * 60 * 60,
             httpOnly: true,
-            sameSite: "lax",
             secure: process.env.NODE_ENV === "production" ? true : false,
             domain: process.env.NODE_ENV === "production" ? 'theclub-backend.azurewebsites.net' : undefined,
         },

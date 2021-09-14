@@ -3,11 +3,16 @@ Club owners
 -able to log in (DONE)
 -able to log out (DONE)
 -able to create page(DONE)
--able to update page()
--able to post image and description (API cloudinary.com)
-- are only allowed to post one card, they cannot post multiple
+-able to update page(DONE)
+-able to post image and description (API cloudinary.com) (DONE)
+- are only allowed to post one card, they cannot post multiple (DONE)
+- able to create post in a page and update it (DONE)
+- Users should be able to edit their profile ()
+- Use dataloader, storybook(DONE)
+- Add OAuth authentication()
+- Add avatar ()
 
 
 --IN THE FUTURE
 -change it to mongodb
-- clubs can start posting on their dedicated page
+- clubs can start posting on their dedicated page (DONE)
