@@ -10,5 +10,6 @@ declare namespace NodeJS {
     REDIS_PASSWORD: string;
     FORGOT_PASSWORD_PREFIX: string;
     DATABASE_URL: string;
+    DATABASE_URL_BACKUP: string;
   }
 }

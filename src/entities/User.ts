@@ -14,15 +14,15 @@ export class User extends BaseEntity {
     @Column({ unique: true })
     email!: string;
 
-    @Field()
+    @Field({ nullable: true })
     @Column({ type: 'text' })
     university: string;
 
-    @Field()
+    @Field({ nullable: true })
     @Column({ unique: true })
     clubUsername: string;
 
-    @Field()
+    @Field({ nullable: true })
     @Column({ type: 'text' })
     clubName: string;
 
