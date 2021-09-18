@@ -16,6 +16,7 @@ import { PageResolver } from "./resolvers/page";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
 import { createPostLoader } from "./utils/createPostLoader";
+import { sendEmail } from "./utils/sendEmail";
 import { userLoader } from "./utils/userLoader";
 
 

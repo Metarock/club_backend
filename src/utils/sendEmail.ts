@@ -5,24 +5,27 @@ import nodemailer from "nodemailer";
 export async function sendEmail(to: string, html: string) {
     // Generate test SMTP service account from ethereal.email
     // Only needed if you don't have a real mail account for testing
-    let testAccount = await nodemailer.createTestAccount();
-    console.log('testAccount', testAccount.user);
-    console.log('testPass', testAccount.pass);
+    // let testAccount = await nodemailer.createTestAccount();
+    // console.log('testAccount', testAccount.user);
+    // console.log('testPass', testAccount.pass);
 
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
-        port: 587,
-        secure: false, // true for 465, false for other ports
+        // host: "smtp.ethereal.email",
+        // port: 587,
+        // secure: false, // true for 465, false for other ports
+        service: "gmail",
         auth: {
-            user: "b4voi42yz7uzwid5@ethereal.email", // generated ethereal user
-            pass: "s8q5B169tzFucr9FFx", // generated ethereal password
+            // user: "b4voi42yz7uzwid5@ethereal.email", // generated ethereal user
+            // pass: "s8q5B169tzFucr9FFx", // generated ethereal password
+            user: process.env.GMAIL_EMAIL,
+            pass: process.env.GMAIL_PASSWORD
         },
     });
 
     // send mail with defined transport object
     let info = await transporter.sendMail({
-        from: '"Fred Foo 👻" <foo@example.com>', // sender address
+        from: 'theclubnz@gmail.com', // sender address
         to: to, // list of receivers
         subject: "Change password", // Subject line
         html, // html body

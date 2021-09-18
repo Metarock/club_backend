@@ -176,7 +176,7 @@ export class UserResolver {
         @Arg('newPassword') newPassword: string,
         @Ctx() { redis, req }: MyContext
     ): Promise<UserResponse> {
-        if (newPassword.length <= 6) {
+        if (newPassword.length <= 5) {
             return {
                 errors: [
                     {

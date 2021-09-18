@@ -10,5 +10,7 @@ declare namespace NodeJS {
     REDIS_PASSWORD: string;
     FORGOT_PASSWORD_PREFIX: string;
     DATABASE_URL: string;
+    GMAIL_EMAIL: string;
+    GMAIL_PASSWORD: string;
   }
 }

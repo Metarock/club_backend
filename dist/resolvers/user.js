@@ -170,7 +170,7 @@ let UserResolver = class UserResolver {
     }
     changePassword(token, newPassword, { redis, req }) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (newPassword.length <= 6) {
+            if (newPassword.length <= 5) {
                 return {
                     errors: [
                         {

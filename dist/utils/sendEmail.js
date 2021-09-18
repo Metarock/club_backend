@@ -16,20 +16,15 @@ exports.sendEmail = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 function sendEmail(to, html) {
     return __awaiter(this, void 0, void 0, function* () {
-        let testAccount = yield nodemailer_1.default.createTestAccount();
-        console.log('testAccount', testAccount.user);
-        console.log('testPass', testAccount.pass);
         let transporter = nodemailer_1.default.createTransport({
-            host: "smtp.ethereal.email",
-            port: 587,
-            secure: false,
+            service: "gmail",
             auth: {
-                user: "b4voi42yz7uzwid5@ethereal.email",
-                pass: "s8q5B169tzFucr9FFx",
+                user: process.env.GMAIL_EMAIL,
+                pass: process.env.GMAIL_PASSWORD
             },
         });
         let info = yield transporter.sendMail({
-            from: '"Fred Foo 👻" <foo@example.com>',
+            from: 'theclubnz@gmail.com',
             to: to,
             subject: "Change password",
             html,
