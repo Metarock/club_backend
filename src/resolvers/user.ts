@@ -2,10 +2,12 @@ import * as argon2 from "argon2";
 import { User } from "../entities/User";
 import { Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import { UsernamePasswordInput } from "../shared/UsernamePasswordInput";
+import { v4 } from "uuid";
 import { MyContext } from "../types";
 import { validateRegister } from "../utils/validateRegister";
 import { getConnection } from "typeorm";
 import { FieldError } from "../shared/FieldError";
+import { sendEmail } from "../utils/sendEmail";
 
 @ObjectType()
 class UserResponse {
@@ -140,6 +142,91 @@ export class UserResolver {
         req.session.userId = user.id; //set session
 
         console
+        return { user };
+    }
+
+    @Mutation(() => Boolean)
+    async forgotPassword(
+        @Arg('email') email: string,
+        @Ctx() { redis }: MyContext
+    ) {
+        const user = await User.findOne({ where: { email } });
+
+        if (!user) {
+            //if user's email is not in the database
+            return true;
+        }
+
+        const token = v4();
+
+        await redis.set(
+            process.env.FORGOT_PASSWORD_PREFIX + token,
+            user.id,
+            'ex',
+            1000 * 60 * 60 * 24 * 3
+        ); //three days to change password
+        await sendEmail(email, `<a href="${process.env.CORS_ORIGIN}/change-password/${token}">reset password</a>`);
+        return true;
+    }
+
+    //change passworsd
+    @Mutation(() => UserResponse)
+    async changePassword(
+        @Arg('token') token: string,
+        @Arg('newPassword') newPassword: string,
+        @Ctx() { redis, req }: MyContext
+    ): Promise<UserResponse> {
+        if (newPassword.length <= 6) {
+            return {
+                errors: [
+                    {
+                        field: 'new password',
+                        message: 'length must be greater than 6'
+                    }
+                ]
+            }
+        }
+
+        //check if toke is valid, redis is used to identify 
+        const key = process.env.FORGOT_PASSWORD_PREFIX + token;
+        const userId = await redis.get(key);
+
+        //if token does not exist
+        if (!userId) {
+            return {
+                errors: [
+                    {
+                        field: 'token',
+                        message: 'token expired'
+                    }
+                ]
+            }
+        }
+
+        const userIdNum = parseInt(userId);
+        //update the user details and password
+        const user = await User.findOne(userIdNum);
+
+        if (!user) {
+            return {
+                errors: [
+                    {
+                        field: 'token',
+                        message: 'user does not exist'
+                    }
+                ]
+            }
+        }
+
+        await User.update(
+            { id: userIdNum },
+            { password: await argon2.hash(newPassword) }
+        );
+
+        await redis.del(key);
+        //Login user after changing password 
+        req.session.userId = user.id;
+
         return { user };
     }
 
