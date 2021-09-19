@@ -95,8 +95,9 @@ export class UserResolver {
     //registration
     @Mutation(() => UserResponse)
     async register(
+        @Ctx() { req }: MyContext,
         @Arg('options') options: UsernamePasswordInput,
-        @Ctx() { req }: MyContext
+        @Arg('userAvatar', () => String, { nullable: true }) userAvatar?: string,
     ): Promise<UserResponse> {
         const errors = validateRegister(options);
 
@@ -118,7 +119,8 @@ export class UserResolver {
                         password: hashedPassword,
                         email: options.email,
                         university: options.university,
-                        clubName: options.clubName
+                        clubName: options.clubName,
+                        userAvatar: userAvatar
                     }
                 )
                 .returning('*')
@@ -156,11 +158,12 @@ export class UserResolver {
         @Arg('clubName') clubName: string,
         @Arg('university') university: string,
         @Arg('email') email: string,
+        @Arg('userAvatar', () => String, { nullable: true }) userAvatar?: string,
     ): Promise<User | null> {
         const user = await getConnection()
             .createQueryBuilder()
             .update(User)
-            .set({ clubUsername, clubName, university, email })
+            .set({ clubUsername, clubName, university, email, userAvatar })
             .where('id = :id', {
                 id
             })
