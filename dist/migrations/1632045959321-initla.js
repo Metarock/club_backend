@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initial1631417536715 = void 0;
-class initial1631417536715 {
+exports.initla1632045959321 = void 0;
+class initla1632045959321 {
     up(_queryRunner) {
         return __awaiter(this, void 0, void 0, function* () {
         });
@@ -20,5 +20,5 @@ class initial1631417536715 {
         });
     }
 }
-exports.initial1631417536715 = initial1631417536715;
-//# sourceMappingURL=1631417536715-initial.js.map
+exports.initla1632045959321 = initla1632045959321;
+//# sourceMappingURL=1632045959321-initla.js.map

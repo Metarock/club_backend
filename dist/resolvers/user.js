@@ -115,7 +115,7 @@ let UserResolver = class UserResolver {
             return { user };
         });
     }
-    register(options, { req }) {
+    register({ req }, options, userAvatar) {
         return __awaiter(this, void 0, void 0, function* () {
             const errors = (0, validateRegister_1.validateRegister)(options);
             if (errors) {
@@ -133,7 +133,8 @@ let UserResolver = class UserResolver {
                     password: hashedPassword,
                     email: options.email,
                     university: options.university,
-                    clubName: options.clubName
+                    clubName: options.clubName,
+                    userAvatar: userAvatar
                 })
                     .returning('*')
                     .execute();
@@ -158,12 +159,12 @@ let UserResolver = class UserResolver {
             return { user };
         });
     }
-    editProfile(id, clubUsername, clubName, university, email) {
+    editProfile(id, clubUsername, clubName, university, email, userAvatar) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield (0, typeorm_1.getConnection)()
                 .createQueryBuilder()
                 .update(User_1.User)
-                .set({ clubUsername, clubName, university, email })
+                .set({ clubUsername, clubName, university, email, userAvatar })
                 .where('id = :id', {
                 id
             })
@@ -286,10 +287,11 @@ __decorate([
 ], UserResolver.prototype, "login", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => UserResponse),
-    __param(0, (0, type_graphql_1.Arg)('options')),
-    __param(1, (0, type_graphql_1.Ctx)()),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)('options')),
+    __param(2, (0, type_graphql_1.Arg)('userAvatar', () => String, { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [UsernamePasswordInput_1.UsernamePasswordInput, Object]),
+    __metadata("design:paramtypes", [Object, UsernamePasswordInput_1.UsernamePasswordInput, String]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "register", null);
 __decorate([
@@ -300,8 +302,9 @@ __decorate([
     __param(2, (0, type_graphql_1.Arg)('clubName')),
     __param(3, (0, type_graphql_1.Arg)('university')),
     __param(4, (0, type_graphql_1.Arg)('email')),
+    __param(5, (0, type_graphql_1.Arg)('userAvatar', () => String, { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String, String, String, String]),
+    __metadata("design:paramtypes", [Number, String, String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "editProfile", null);
 __decorate([

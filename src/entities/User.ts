@@ -29,6 +29,10 @@ export class User extends BaseEntity {
     @OneToOne(() => Page, page => page.creator)
     page: Page;
 
+    @Field(() => String, { nullable: true })
+    @Column({ nullable: true })
+    userAvatar!: string;
+
     @Column()
     password!: string;
 
