@@ -17,20 +17,26 @@ const nodemailer_1 = __importDefault(require("nodemailer"));
 function sendEmail(to, html) {
     return __awaiter(this, void 0, void 0, function* () {
         let transporter;
-        process.env.NODE_ENV === "production" ? (transporter = nodemailer_1.default.createTransport({
-            auth: {
-                user: process.env.GMAIL_EMAIL,
-                pass: process.env.GMAIL_PASSWORD
-            },
-        })) : (transporter = nodemailer_1.default.createTransport({
-            host: "smtp.ethereal.email",
-            port: 587,
-            secure: false,
-            auth: {
-                user: "b4voi42yz7uzwid5@ethereal.email",
-                pass: "s8q5B169tzFucr9FFx",
-            },
-        }));
+        if (process.env.NODE_ENV === "production") {
+            transporter = nodemailer_1.default.createTransport({
+                service: "gmail",
+                auth: {
+                    user: process.env.GMAIL_EMAIL,
+                    pass: process.env.GMAIL_PASSWORD
+                },
+            });
+        }
+        else {
+            transporter = nodemailer_1.default.createTransport({
+                host: "smtp.ethereal.email",
+                port: 587,
+                secure: false,
+                auth: {
+                    user: "b4voi42yz7uzwid5@ethereal.email",
+                    pass: "s8q5B169tzFucr9FFx",
+                },
+            });
+        }
         let info = yield transporter.sendMail({
             from: 'theclubnz@gmail.com',
             to: to,
