@@ -50,6 +50,7 @@ const validateRegister_1 = require("../utils/validateRegister");
 const typeorm_1 = require("typeorm");
 const FieldError_1 = require("../shared/FieldError");
 const sendEmail_1 = require("../utils/sendEmail");
+const isAuth_1 = require("../middleware/isAuth");
 let UserResponse = class UserResponse {
 };
 __decorate([
@@ -155,6 +156,20 @@ let UserResolver = class UserResolver {
             req.session.userId = user.id;
             console;
             return { user };
+        });
+    }
+    editProfile(id, clubUsername, clubName, university, email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield (0, typeorm_1.getConnection)()
+                .createQueryBuilder()
+                .update(User_1.User)
+                .set({ clubUsername, clubName, university, email })
+                .where('id = :id', {
+                id
+            })
+                .returning("*")
+                .execute();
+            return user.raw[0];
         });
     }
     forgotPassword(email, { redis }) {
@@ -277,6 +292,18 @@ __decorate([
     __metadata("design:paramtypes", [UsernamePasswordInput_1.UsernamePasswordInput, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "register", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => User_1.User, { nullable: true }),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    __param(0, (0, type_graphql_1.Arg)('id', () => type_graphql_1.Int)),
+    __param(1, (0, type_graphql_1.Arg)('clubUsername')),
+    __param(2, (0, type_graphql_1.Arg)('clubName')),
+    __param(3, (0, type_graphql_1.Arg)('university')),
+    __param(4, (0, type_graphql_1.Arg)('email')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String, String, String]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "editProfile", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => UserResponse),
     __param(0, (0, type_graphql_1.Arg)('email')),

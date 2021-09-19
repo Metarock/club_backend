@@ -11,8 +11,9 @@ Club owners
 - Use dataloader, storybook(DONE)
 - Add OAuth authentication()
 - Add avatar ()
+- Mobile responsive (it should be hamburger when mobile)
 
 
 --IN THE FUTURE
--change it to mongodb
+-change it to mongodb (ATTEMPTED NOT GOING TO CONTINUE)
 - clubs can start posting on their dedicated page (DONE)

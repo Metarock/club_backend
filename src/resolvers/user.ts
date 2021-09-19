@@ -1,6 +1,6 @@
 import * as argon2 from "argon2";
 import { User } from "../entities/User";
-import { Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Field, Int, Mutation, ObjectType, Query, Resolver, UseMiddleware } from "type-graphql";
 import { UsernamePasswordInput } from "../shared/UsernamePasswordInput";
 import { v4 } from "uuid";
 import { MyContext } from "../types";
@@ -8,6 +8,7 @@ import { validateRegister } from "../utils/validateRegister";
 import { getConnection } from "typeorm";
 import { FieldError } from "../shared/FieldError";
 import { sendEmail } from "../utils/sendEmail";
+import { isAuth } from "../middleware/isAuth";
 
 @ObjectType()
 class UserResponse {
@@ -144,6 +145,29 @@ export class UserResolver {
 
         console
         return { user };
+    }
+
+    //Update user details
+    @Mutation(() => User, { nullable: true })
+    @UseMiddleware(isAuth)
+    async editProfile(
+        @Arg('id', () => Int) id: number,
+        @Arg('clubUsername') clubUsername: string,
+        @Arg('clubName') clubName: string,
+        @Arg('university') university: string,
+        @Arg('email') email: string,
+    ): Promise<User | null> {
+        const user = await getConnection()
+            .createQueryBuilder()
+            .update(User)
+            .set({ clubUsername, clubName, university, email })
+            .where('id = :id', {
+                id
+            })
+            .returning("*")
+            .execute();
+        //id is the condition here for user to update
+        return user.raw[0] as any
     }
 
     @Mutation(() => UserResponse)
