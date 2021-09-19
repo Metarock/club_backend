@@ -62,9 +62,10 @@ export class UserResolver {
 
         //if user is not found
         if (!user) {
+            console.log("error in login, user not found", user);
             return {
                 errors: [{
-                    field: 'usernameorEmail',
+                    field: 'usernameOrEmail',
                     message: 'username does not exist'
                 }]
             }
@@ -129,8 +130,8 @@ export class UserResolver {
             if (err.code === "23505") {
                 return {
                     errors: [{
-                        field: 'clubUsername',
-                        message: 'club username already exists and taken'
+                        field: 'email' || 'clubUsername',
+                        message: 'email or club username already exists and taken'
                     }]
                 }
             } //duplicate username error
@@ -145,16 +146,21 @@ export class UserResolver {
         return { user };
     }
 
-    @Mutation(() => Boolean)
+    @Mutation(() => UserResponse)
     async forgotPassword(
         @Arg('email') email: string,
         @Ctx() { redis }: MyContext
-    ) {
+    ): Promise<UserResponse> {
         const user = await User.findOne({ where: { email } });
 
         if (!user) {
             //if user's email is not in the database
-            return true;
+            return {
+                errors: [{
+                    field: 'email',
+                    message: 'email does not exist'
+                }]
+            }
         }
 
         const token = v4();
@@ -166,7 +172,7 @@ export class UserResolver {
             1000 * 60 * 60 * 24 * 3
         ); //three days to change password
         await sendEmail(email, `<a href="${process.env.CORS_ORIGIN}/change-password/${token}">reset password</a>`);
-        return true;
+        return { user };
     }
 
     //change passworsd
@@ -180,8 +186,8 @@ export class UserResolver {
             return {
                 errors: [
                     {
-                        field: 'new password',
-                        message: 'length must be greater than 6'
+                        field: 'newPassword',
+                        message: 'length must be greater than 5'
                     }
                 ]
             }

@@ -17,10 +17,12 @@ const nodemailer_1 = __importDefault(require("nodemailer"));
 function sendEmail(to, html) {
     return __awaiter(this, void 0, void 0, function* () {
         let transporter = nodemailer_1.default.createTransport({
-            service: "gmail",
+            host: "smtp.ethereal.email",
+            port: 587,
+            secure: false,
             auth: {
-                user: process.env.GMAIL_EMAIL,
-                pass: process.env.GMAIL_PASSWORD
+                user: "b4voi42yz7uzwid5@ethereal.email",
+                pass: "s8q5B169tzFucr9FFx",
             },
         });
         let info = yield transporter.sendMail({

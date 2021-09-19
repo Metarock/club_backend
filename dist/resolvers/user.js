@@ -90,9 +90,10 @@ let UserResolver = class UserResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.User.findOne(usernameOrEmail.includes('@') ? { where: { email: usernameOrEmail } } : { where: { clubUsername: usernameOrEmail } });
             if (!user) {
+                console.log("error in login, user not found", user);
                 return {
                     errors: [{
-                            field: 'usernameorEmail',
+                            field: 'usernameOrEmail',
                             message: 'username does not exist'
                         }]
                 };
@@ -143,8 +144,8 @@ let UserResolver = class UserResolver {
                 if (err.code === "23505") {
                     return {
                         errors: [{
-                                field: 'clubUsername',
-                                message: 'club username already exists and taken'
+                                field: 'email' || 'clubUsername',
+                                message: 'email or club username already exists and taken'
                             }]
                     };
                 }
@@ -160,12 +161,17 @@ let UserResolver = class UserResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield User_1.User.findOne({ where: { email } });
             if (!user) {
-                return true;
+                return {
+                    errors: [{
+                            field: 'email',
+                            message: 'email does not exist'
+                        }]
+                };
             }
             const token = (0, uuid_1.v4)();
             yield redis.set(process.env.FORGOT_PASSWORD_PREFIX + token, user.id, 'ex', 1000 * 60 * 60 * 24 * 3);
             yield (0, sendEmail_1.sendEmail)(email, `<a href="${process.env.CORS_ORIGIN}/change-password/${token}">reset password</a>`);
-            return true;
+            return { user };
         });
     }
     changePassword(token, newPassword, { redis, req }) {
@@ -174,8 +180,8 @@ let UserResolver = class UserResolver {
                 return {
                     errors: [
                         {
-                            field: 'new password',
-                            message: 'length must be greater than 6'
+                            field: 'newPassword',
+                            message: 'length must be greater than 5'
                         }
                     ]
                 };
@@ -272,7 +278,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "register", null);
 __decorate([
-    (0, type_graphql_1.Mutation)(() => Boolean),
+    (0, type_graphql_1.Mutation)(() => UserResponse),
     __param(0, (0, type_graphql_1.Arg)('email')),
     __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),

@@ -11,15 +11,15 @@ export async function sendEmail(to: string, html: string) {
 
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
-        // host: "smtp.ethereal.email",
-        // port: 587,
-        // secure: false, // true for 465, false for other ports
-        service: "gmail",
+        host: "smtp.ethereal.email",
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        // service: "gmail",
         auth: {
-            // user: "b4voi42yz7uzwid5@ethereal.email", // generated ethereal user
-            // pass: "s8q5B169tzFucr9FFx", // generated ethereal password
-            user: process.env.GMAIL_EMAIL,
-            pass: process.env.GMAIL_PASSWORD
+            user: "b4voi42yz7uzwid5@ethereal.email", // generated ethereal user
+            pass: "s8q5B169tzFucr9FFx", // generated ethereal password
+            // user: process.env.GMAIL_EMAIL,
+            // pass: process.env.GMAIL_PASSWORD
         },
     });
 
