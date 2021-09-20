@@ -83,7 +83,11 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             validate: false
         }),
         context: ({ req, res }) => ({ req, res, redis, userLoader: (0, userLoader_1.userLoader)(), postLoader: (0, createPostLoader_1.createPostLoader)() }),
-        playground: true,
+        playground: {
+            settings: {
+                "request.credentials": "include"
+            }
+        },
         introspection: true,
     });
     apolloServer.applyMiddleware({ app, cors: false });
