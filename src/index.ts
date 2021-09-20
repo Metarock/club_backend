@@ -1,4 +1,5 @@
 import { ApolloServer } from "apollo-server-express";
+import "reflect-metadata";
 import connectRedis from "connect-redis";
 import cors from "cors";
 import "dotenv-safe/config";
@@ -6,7 +7,6 @@ import express from "express";
 import session from "express-session";
 import Redis from 'ioredis';
 import path from "path";
-import "reflect-metadata";
 import { buildSchema } from "type-graphql";
 import { createConnection } from "typeorm";
 import { Page } from "./entities/Page";
@@ -71,7 +71,7 @@ const main = async () => {
             cookie: {
                 maxAge: 1000 * 60 * 60, //cookie durations
                 httpOnly: true,
-                sameSite: 'lax',
+                sameSite: 'none',
                 secure: process.env.NODE_ENV === "production" ? true : false,
                 domain: process.env.NODE_ENV === "production" ? 'theclub-backend.azurewebsites.net' : undefined,
 
