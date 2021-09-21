@@ -244,6 +244,15 @@ let UserResolver = class UserResolver {
             res.clearCookie(process.env.COOKIE_NAME);
         }));
     }
+    deleteAccount(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield User_1.User.delete({ id });
+            if (!user) {
+                return false;
+            }
+            return true;
+        });
+    }
 };
 __decorate([
     (0, type_graphql_1.Query)(() => String),
@@ -331,6 +340,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UserResolver.prototype, "logout", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Boolean),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    __param(0, (0, type_graphql_1.Arg)('id', () => type_graphql_1.Int)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "deleteAccount", null);
 UserResolver = __decorate([
     (0, type_graphql_1.Resolver)(User_1.User)
 ], UserResolver);

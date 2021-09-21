@@ -9,6 +9,8 @@ import { getConnection } from "typeorm";
 import { FieldError } from "../shared/FieldError";
 import { sendEmail } from "../utils/sendEmail";
 import { isAuth } from "../middleware/isAuth";
+import { Page } from "../entities/Page";
+import { Post } from "../entities/Post";
 
 @ObjectType()
 class UserResponse {
@@ -280,4 +282,17 @@ export class UserResolver {
         }))
     }
 
+    //delete account
+    @Mutation(() => Boolean)
+    @UseMiddleware(isAuth)
+    async deleteAccount(@Arg('id', () => Int) id: number): Promise<Boolean> {
+        const user = await User.delete({ id })
+
+        if (!user) {
+            //not found
+            return false;
+        }
+
+        return true;
+    }
 }
