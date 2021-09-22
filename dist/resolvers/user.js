@@ -51,6 +51,7 @@ const typeorm_1 = require("typeorm");
 const FieldError_1 = require("../shared/FieldError");
 const sendEmail_1 = require("../utils/sendEmail");
 const isAuth_1 = require("../middleware/isAuth");
+const emailTemplate_1 = require("../utils/emailTemplate");
 let UserResponse = class UserResponse {
 };
 __decorate([
@@ -155,7 +156,7 @@ let UserResolver = class UserResolver {
             console.log('club user name: ', user);
             console.log('club id', user.id);
             req.session.userId = user.id;
-            console;
+            yield (0, sendEmail_1.sendEmail)(options.email, yield (0, emailTemplate_1.registrationEmail)(options.clubName, process.env.CORS_ORIGIN));
             return { user };
         });
     }
@@ -186,7 +187,7 @@ let UserResolver = class UserResolver {
             }
             const token = (0, uuid_1.v4)();
             yield redis.set(process.env.FORGOT_PASSWORD_PREFIX + token, user.id, 'ex', 1000 * 60 * 60 * 24 * 3);
-            yield (0, sendEmail_1.sendEmail)(email, `<a href="${process.env.CORS_ORIGIN}/change-password/${token}">reset password</a>`);
+            yield (0, sendEmail_1.sendEmail)(email, yield (0, emailTemplate_1.forgotemailTemplate)(user.clubUsername, process.env.CORS_ORIGIN, token));
             return { user };
         });
     }
@@ -246,7 +247,7 @@ let UserResolver = class UserResolver {
     }
     deleteAccount(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield User_1.User.delete({ id });
+            const user = yield User_1.User.delete({ id: id });
             if (!user) {
                 return false;
             }

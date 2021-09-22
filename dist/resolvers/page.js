@@ -108,12 +108,12 @@ let PageResolver = class PageResolver {
             }).save();
         });
     }
-    editPage(id, pageTitle, pageText, aboutUs, { req }) {
+    editPage({ req }, id, pageTitle, pageText, aboutUs, pageimgUrl) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield (0, typeorm_1.getConnection)()
                 .createQueryBuilder()
                 .update(Page_1.Page)
-                .set({ pageTitle, pageText, aboutUs })
+                .set({ pageTitle, pageText, aboutUs, pageimgUrl })
                 .where('id = :id and "creatorId" = :creatorId', {
                 id,
                 creatorId: req.session.userId
@@ -166,13 +166,14 @@ __decorate([
 __decorate([
     (0, type_graphql_1.Mutation)(() => Page_1.Page, { nullable: true }),
     (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
-    __param(0, (0, type_graphql_1.Arg)('id', () => type_graphql_1.Int)),
-    __param(1, (0, type_graphql_1.Arg)('pageTitle')),
-    __param(2, (0, type_graphql_1.Arg)('pageText')),
-    __param(3, (0, type_graphql_1.Arg)('aboutUs')),
-    __param(4, (0, type_graphql_1.Ctx)()),
+    __param(0, (0, type_graphql_1.Ctx)()),
+    __param(1, (0, type_graphql_1.Arg)('id', () => type_graphql_1.Int)),
+    __param(2, (0, type_graphql_1.Arg)('pageTitle')),
+    __param(3, (0, type_graphql_1.Arg)('pageText')),
+    __param(4, (0, type_graphql_1.Arg)('aboutUs')),
+    __param(5, (0, type_graphql_1.Arg)('pageimgUrl', () => String, { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String, String, String, Object]),
+    __metadata("design:paramtypes", [Object, Number, String, String, String, String]),
     __metadata("design:returntype", Promise)
 ], PageResolver.prototype, "editPage", null);
 __decorate([

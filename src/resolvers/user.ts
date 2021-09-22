@@ -11,6 +11,7 @@ import { sendEmail } from "../utils/sendEmail";
 import { isAuth } from "../middleware/isAuth";
 import { Page } from "../entities/Page";
 import { Post } from "../entities/Post";
+import { forgotemailTemplate, registrationEmail } from "../utils/emailTemplate";
 
 @ObjectType()
 class UserResponse {
@@ -146,8 +147,7 @@ export class UserResolver {
         console.log('club id', user.id);
 
         req.session.userId = user.id; //set session
-
-        console
+        await sendEmail(options.email, await registrationEmail(options.clubName, process.env.CORS_ORIGIN));
         return { user };
     }
 
@@ -200,7 +200,7 @@ export class UserResolver {
             'ex',
             1000 * 60 * 60 * 24 * 3
         ); //three days to change password
-        await sendEmail(email, `<a href="${process.env.CORS_ORIGIN}/change-password/${token}">reset password</a>`);
+        await sendEmail(email, await forgotemailTemplate(user.clubUsername, process.env.CORS_ORIGIN, token));
         return { user };
     }
 
@@ -286,7 +286,10 @@ export class UserResolver {
     @Mutation(() => Boolean)
     @UseMiddleware(isAuth)
     async deleteAccount(@Arg('id', () => Int) id: number): Promise<Boolean> {
-        const user = await User.delete({ id })
+
+        const user = await User.delete({ id: id });
+
+
 
         if (!user) {
             //not found
