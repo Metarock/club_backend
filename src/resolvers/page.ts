@@ -92,16 +92,17 @@ export class PageResolver {
     @Mutation(() => Page, { nullable: true })
     @UseMiddleware(isAuth)
     async editPage(
+        @Ctx() { req }: MyContext,
         @Arg('id', () => Int) id: number,
         @Arg('pageTitle') pageTitle: string,
         @Arg('pageText') pageText: string,
         @Arg('aboutUs') aboutUs: string,
-        @Ctx() { req }: MyContext
+        @Arg('pageimgUrl', () => String, { nullable: true }) pageimgUrl?: string,
     ): Promise<Page | null> {
         const result = await getConnection()
             .createQueryBuilder()
             .update(Page)
-            .set({ pageTitle, pageText, aboutUs })
+            .set({ pageTitle, pageText, aboutUs, pageimgUrl })
             .where('id = :id and "creatorId" = :creatorId', {
                 id,
                 creatorId: req.session.userId
