@@ -88,7 +88,11 @@ const main = async () => {
             validate: false
         }),
         context: ({ req, res }) => ({ req, res, redis, userLoader: userLoader(), postLoader: createPostLoader() }),
-        playground: true,
+        playground: {
+            settings: {
+                "request.credentials": "include"
+            }
+        },
         introspection: true,
     })
 
