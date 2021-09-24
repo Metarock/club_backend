@@ -71,7 +71,7 @@ const main = async () => {
             cookie: {
                 maxAge: 1000 * 60 * 60, //cookie durations
                 httpOnly: true,
-                sameSite: 'lax',
+                sameSite: 'none',
                 secure: process.env.NODE_ENV === "production" ? true : false,
                 domain: process.env.NODE_ENV === "production" ? 'theclub-backend.azurewebsites.net' : undefined,
 
@@ -88,11 +88,7 @@ const main = async () => {
             validate: false
         }),
         context: ({ req, res }) => ({ req, res, redis, userLoader: userLoader(), postLoader: createPostLoader() }),
-        playground: {
-            settings: {
-                "request.credentials": "include"
-            }
-        },
+        playground: true,
         introspection: true,
     })
 

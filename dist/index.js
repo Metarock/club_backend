@@ -68,7 +68,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         cookie: {
             maxAge: 1000 * 60 * 60,
             httpOnly: true,
-            sameSite: 'lax',
+            sameSite: 'none',
             secure: process.env.NODE_ENV === "production" ? true : false,
             domain: process.env.NODE_ENV === "production" ? 'theclub-backend.azurewebsites.net' : undefined,
         },
@@ -82,11 +82,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             validate: false
         }),
         context: ({ req, res }) => ({ req, res, redis, userLoader: (0, userLoader_1.userLoader)(), postLoader: (0, createPostLoader_1.createPostLoader)() }),
-        playground: {
-            settings: {
-                "request.credentials": "include"
-            }
-        },
+        playground: true,
         introspection: true,
     });
     apolloServer.applyMiddleware({ app, cors: false });
